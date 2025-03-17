@@ -1,25 +1,35 @@
 import './global.css'
 import type { Metadata } from 'next'
-import { GeistSans } from 'geist/font/sans'
-import { GeistMono } from 'geist/font/mono'
 import { Navbar } from './components/nav'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import Footer from './components/footer'
 import { baseUrl } from './sitemap'
+import { Manrope, Fira_Code } from 'next/font/google'
+import clsx from 'clsx'
+
+const manrope = Manrope({
+  subsets: ['latin'],
+  variable: '--font-manrope',
+})
+
+const firaCode = Fira_Code({
+  subsets: ['latin'],
+  variable: '--font-fira-code',
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: 'Next.js Portfolio Starter',
-    template: '%s | Next.js Portfolio Starter',
+    default: 'Paweł Krystkiewicz',
+    template: '%s | Paweł Krystkiewicz',
   },
-  description: 'This is my portfolio.',
+  description: 'Portfolio of Paweł Krystkiewicz, a software engineer',
   openGraph: {
-    title: 'My Portfolio',
-    description: 'This is my portfolio.',
+    title: 'Paweł Krystkiewicz',
+    description: 'Portfolio of Paweł Krystkiewicz, a software engineer',
     url: baseUrl,
-    siteName: 'My Portfolio',
+    siteName: 'Paweł Krystkiewicz',
     locale: 'en_US',
     type: 'website',
   },
@@ -36,22 +46,11 @@ export const metadata: Metadata = {
   },
 }
 
-const cx = (...classes) => classes.filter(Boolean).join(' ')
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
-      className={cx(
-        'text-black bg-white dark:text-white dark:bg-black',
-        GeistSans.variable,
-        GeistMono.variable
-      )}
-    >
+      className={clsx('text-black bg-white dark:text-white dark:bg-black', manrope.variable, firaCode.variable)}>
       <body className="antialiased max-w-xl mx-4 mt-8 lg:mx-auto">
         <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
           <Navbar />

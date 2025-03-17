@@ -1,11 +1,12 @@
 @import 'tailwindcss';
 
-::selection {
-  background-color: #47a3f3;
-  color: #fefefe;
-}
-
 :root {
+  --text-primary: oklch(0 0 0);
+  --text-secondary: oklch(0.556 0 0);
+  --background-primary: oklch(0.990 0 0);
+  --background-secondary: oklch(0.985 0 0);
+  --border: oklch(0.87 0 0);
+  /* editor */
   --sh-class: #2d5e9d;
   --sh-identifier: #354150;
   --sh-sign: #8996a3;
@@ -15,22 +16,81 @@
   --sh-jsxliterals: #6266d1;
   --sh-property: #e25a1c;
   --sh-entity: #e25a1c;
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
+  @variant dark {
+    --text-primary: oklch(0.97 0 0);
+    --text-secondary: oklch(0.87 0 0);
+    --background-primary: oklch(0.269 0 0);
+    --background-secondary: oklch(0.371 0 0);
+    --border: oklch(0.350 0 0);
+    /* editor */
     --sh-class: #4c97f8;
     --sh-identifier: white;
     --sh-keyword: #f47067;
     --sh-string: #0fa295;
   }
-  html {
-    color-scheme: dark;
+}
+
+
+@theme {
+  /* FONT */
+  --font-sans: "Manrope", "sans-serif";
+  --font-mono: "Fira Code", "monospace";
+
+  /* COLOR */
+  --color-primary: oklch(60.48% 0.2165 257.21);
+  --color-warning: oklch(77.97% 0.1665 72.45);
+  --color-error: oklch(66.16% 0.2249 25.88);
+  --color-success: oklch(75.14% 0.1514 166.5);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-background-primary: var(--background-primary);
+  --color-background-secondary: var(--background-secondary);
+  --color-border: var(--border);
+
+  /* FONTS */
+  --font-sans: "Manrope", "sans-serif";
+  --font-mono: "Fira Code", "monospace";
+
+  /* ANIMATIONS */
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+
+  /* SIZES */
+  --ui-height: 35px;
+  --ui-icon-height: calc(var(--ui-height) * 0.5);
+
+  /* Z-INDEX */
+  --ui-z-base: 0;
+  --ui-z-dropdowns: 200;
+  --ui-z-tooltips: 400;
+  --ui-z-overlays: 500;
+  --ui-z-drawers: 600;
+  --ui-z-modals: 700;
+  --ui-z-notifications: 800;
+}
+
+@variant dark (&:where(.dark, .dark *));
+
+
+
+html {
+  @apply scroll-smooth min-w-[360px];
+}
+
+body {
+  @apply font-sans antialiased text-text-primary border-border;
+}
+
+.hide-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 
-html {
-  min-width: 360px;
+.micro-interactions {
+  @apply transition-all duration-300 ease-snappy;
 }
 
 .prose .anchor {
@@ -56,7 +116,7 @@ html {
   content: '#';
 }
 
-.prose *:hover > .anchor {
+.prose *:hover>.anchor {
   @apply visible;
 }
 
@@ -115,7 +175,7 @@ html {
   @apply list-decimal pl-6;
 }
 
-.prose > :first-child {
+.prose> :first-child {
   /* Override removing top margin, causing layout shift */
   margin-top: 1.25em !important;
   margin-bottom: 1.25em !important;
@@ -126,8 +186,10 @@ pre::-webkit-scrollbar {
 }
 
 pre {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 /* Remove Safari input shadow on mobile */
