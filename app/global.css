@@ -210,3 +210,15 @@ table {
 .title {
   text-wrap: balance;
 }
+
+.link {
+  @apply text-primary underline;
+
+  &:hover {
+    @apply text-primary/80;
+  }
+
+  &:visited {
+    @apply text-warning;
+  }
+}
