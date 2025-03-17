@@ -1,3 +1,5 @@
+const START_DATE = '2017-07-15'
+
 const config = {
   name: 'Paweł Krystkiewicz',
   title: 'Engineer, Designer, Developer',
@@ -6,9 +8,12 @@ const config = {
   linkedin: 'https://www.linkedin.com/in/pawelkrystkiewicz/',
   github: 'https://github.com/pawelkrystkiewicz',
   repo: 'https://github.com/pawelkrystkiewicz/pawel-krystkiewicz',
+  phone: '+48 501 287 748',
   flags: {
     cui: true,
   },
+  startDate: START_DATE,
+  totalExperience: new Date().getFullYear() - new Date(START_DATE).getFullYear(),
 }
 
 export default config

@@ -1,0 +1,56 @@
+[
+  {
+    "id": 5,
+    "company": "Artificial Labs",
+    "industry": "insurtech",
+    "role": "Lead Frontend Engineer",
+    "start": { "month": 3, "year": 2022 },
+    "end": { "month": 3, "year": 2025 },
+    "location": "London, UK",
+    "stack": ["React", "TypeScript", "TailwindCSS v3", "AWS"],
+    "link": "https://artificial.io"
+  },
+  {
+    "id": 3,
+    "company": "Chronos",
+    "industry": "wfm",
+    "role": "Product Engineer",
+    "start": { "month": 11, "year": 2021 },
+    "end": { "month": 6, "year": 2023 },
+    "location": "PL",
+    "stack": ["React", "TypeScript", "MUI", "Google Cloud Platform", "Node.js"]
+  },
+  {
+    "id": 3,
+    "company": "Currency One",
+    "industry": "fintech",
+    "role": "Software Engineer",
+    "start": { "month": 3, "year": 2020 },
+    "end": { "month": 11, "year": 2021 },
+    "location": "Poznan, PL",
+    "stack": ["React", "TypeScript", "Angular 1", "microservices", "Python", "Kotlin", "Node.js"],
+    "link": "https://currency-one.com/"
+  },
+  {
+    "id": 2,
+    "company": "4LS/Genetix",
+    "industry": "logistics",
+    "role": "Fullstack Developer",
+    "start": { "month": 9, "year": 2018 },
+    "end": { "month": 3, "year": 2020 },
+    "location": "Poznan, PL",
+    "stack": ["React", "TypeScript", "microservices", "Node.js", "SQLServer", "ETL", "Postgres"],
+    "link": "https://4ls.pl"
+  },
+  {
+    "id": 1,
+    "company": "Beiersdorf",
+    "industry": "cosmetics",
+    "role": "Data Analyst",
+    "start": { "month": 7, "year": 2017 },
+    "end": { "month": 8, "year": 2018 },
+    "location": "Poznan, PL",
+    "stack": ["MSAccess", "SQL", "VBA"],
+    "link": "https://www.niveapolska.pl/"
+  }
+]

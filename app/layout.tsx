@@ -7,6 +7,7 @@ import Footer from './components/footer'
 import { baseUrl } from './sitemap'
 import { Manrope, Fira_Code } from 'next/font/google'
 import clsx from 'clsx'
+import Provider from './provider'
 
 const manrope = Manrope({
   subsets: ['latin'],
@@ -51,13 +52,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en"
       className={clsx('text-black bg-white dark:text-white dark:bg-black', manrope.variable, firaCode.variable)}>
-      <body className="antialiased max-w-xl mx-4 mt-8 lg:mx-auto">
+      <body className="antialiased mx-4 mt-8 lg:mx-auto" style={{ maxWidth: '210mm' }}>
         <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
-          <Navbar />
-          {children}
-          <Footer />
-          <Analytics />
-          <SpeedInsights />
+          <Provider>
+            <Navbar />
+            {children}
+            <Footer />
+            <Analytics />
+            <SpeedInsights />
+          </Provider>
         </main>
       </body>
     </html>

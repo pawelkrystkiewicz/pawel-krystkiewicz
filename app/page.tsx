@@ -2,11 +2,9 @@ import { BlogPosts } from 'app/components/posts'
 import Link from 'next/link'
 import config from '../config'
 
-const experience = new Date('2018-10-01')
-const years = new Date().getFullYear() - experience.getFullYear()
+const { title, description, flags, totalExperience } = config
 
 export default function Page() {
-  const { title, description, flags } = config
   return (
     <section className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
@@ -14,7 +12,7 @@ export default function Page() {
         <p className="mb-8">{description}</p>
       </div>
       <p className="mb-4 text-lg">
-        I'm a web developer with {years} years of experience crafting high-performance, scalable applications.
+        I'm a web developer with {totalExperience} years of experience crafting high-performance, scalable applications.
         Specializing in React, TypeScript and modern UI/UX.
         {flags.cui && (
           <>

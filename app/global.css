@@ -222,3 +222,10 @@ table {
     @apply text-warning;
   }
 }
+
+.link-descrete {
+
+  &:hover {
+    @apply text-primary;
+  }
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "company": "Artificial Labs",
+    "project": "Contract Builder",
+    "entries": [
+      {
+        "description": "Initiated and led the development of Contract Builder for over 1.5 years. Today, it drives the <b>majority</b> of company's revenue and has been adopted by leading insurers in the UK and US. Each client contract is valued at <b>several million GBP annually</b>.",
+        "source": [
+          {
+            "link": "https://placingplatformlimited.com/news/integrated-digital-contract-capability-powered-by-artificial/",
+            "text": "PPL's perspective"
+          }
+        ]
+      },
+      {
+        "description": "the app has now major impact on the digital transformation of the London insurance market through integration with Placing Platform Limited (PPL), reducing contract creation time by <b>50%</b> and expediting MRCv3 adoption by <b>75%</b>.",
+        "source": [
+          {
+            "link": "https://artificial.io/company/blog/ppl-launches-integrated-digital-contract-capability-powered-by-artificial/",
+            "text": "Artificial Labs' perspective"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "company": "Currency One",
+
+    "entries": [
+      {
+        "description": "Optimized core microservices' MongoDB queries leading to reduction in website loading times by <b>25%</b> on average."
+      }
+    ]
+  },
+  {
+    "company": "4LS/Genetix",
+    "project": "Track&Trace",
+    "entries": [
+      {
+        "description": "As a junior developer, designed and developed a Node.js-based track-and-trace system for logistics. <b>A step up from the previous Delphi-based system.</b>"
+      }
+    ]
+  }
+]
