@@ -229,3 +229,26 @@ table {
     @apply text-primary;
   }
 }
+
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  #printable,
+  #printable * {
+    visibility: visible !important;
+  }
+
+  #printable {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .page-break {
+    page-break-before: always;
+    break-before: page;
+  }
+}
