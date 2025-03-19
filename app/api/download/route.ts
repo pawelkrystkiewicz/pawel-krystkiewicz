@@ -3,7 +3,7 @@ import puppeteerCore from 'puppeteer-core'
 import puppeteer from 'puppeteer'
 import chromium from '@sparticuz/chromium'
 
-const baseUrl = getBaseUrl()
+const baseUrl = process.env.NEXT_PUBLIC_URL
 
 export const dynamic = 'force-dynamic'
 
