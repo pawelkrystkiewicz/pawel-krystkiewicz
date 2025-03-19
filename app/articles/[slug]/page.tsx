@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { CustomMDX } from 'app/components/Mdx'
 import { formatDate, getArticles } from '@/app/articles/utils'
 import { baseUrl } from 'app/sitemap'
+import config from '@/config'
 
 export async function generateStaticParams() {
   let posts = getArticles()
@@ -49,8 +50,13 @@ export async function generateMetadata({ params }) {
   }
 }
 
-export default async function Blog({ params }) {
+export default async function Article({ params }) {
+  if (!config.flags.articles) {
+    notFound()
+  }
+
   const { slug } = await params
+  console.log(slug)
   let post = getArticles().find(post => post.slug === slug)
 
   if (!post) {

@@ -3,7 +3,7 @@ import config from '../config'
 import { Paragraph } from './components/cv/Typography'
 import achievementsData from './components/cv/achievements.data'
 import { AchievementEntry } from './components/cv/AchievementEntry'
-import { BlogPosts } from './components/Posts'
+import { PostedArticles } from './components/Posts'
 import Icons from './components/Icons'
 
 const { title, description, flags, totalExperience } = config
@@ -51,7 +51,7 @@ export default function Page() {
             Articles
           </Link>
         </h2>
-          <BlogPosts />
+          <PostedArticles />
         </div>
       )}
     </section>

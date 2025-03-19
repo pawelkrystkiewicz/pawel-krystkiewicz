@@ -19,7 +19,7 @@ const firaCode = Fira_Code({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(baseUrl),
+  metadataBase: new URL(baseUrl || ''),
   title: {
     default: 'Paweł Krystkiewicz',
     template: '%s | Paweł Krystkiewicz',
