@@ -7,7 +7,7 @@ import { AchievementEntry } from './AchievementEntry'
 import { ExperienceEntry } from './ExperienceEntry'
 import { Section } from './Section'
 import { Divider, Paragraph } from './Typography'
-
+import Icons from '../Icons'
 const { name, email, linkedin, github, phone } = config
 
 const DEBUG = false
@@ -33,14 +33,14 @@ export const Document = () => {
             <br /> Developer
           </div>
           <div className="mt-2 text-gray-700 flex flex-col justify-between">
-            <Link href={`tel:${phone}`} target="_blank" className="whitespace-nowrap">
-              {phone}
+            <Link href={`tel:${phone}`} target="_blank" className="whitespace-nowrap flex items-center gap-1">
+              <Icons.Phone /> {phone}
             </Link>
-            <Link href={`mailto:${email}`} target="_blank" className="whitespace-nowrap">
-              {email}
+            <Link href={`mailto:${email}`} target="_blank" className="whitespace-nowrap flex items-center gap-1">
+              <Icons.Email /> {email}
             </Link>
-            <Link href={linkedin} target="_blank" className="whitespace-nowrap">
-              LinkedIn
+            <Link href={linkedin} target="_blank" className="whitespace-nowrap flex items-center gap-1">
+              <Icons.LinkedIn /> LinkedIn
             </Link>
           </div>
         </header>
@@ -117,14 +117,14 @@ export const Document = () => {
         <footer className="text-sm text-text-secondary col-span-3">
           <Divider className="block mb-1" />
           <div className="flex justify-between">
-            <Link href={linkedin} target="_blank" className="whitespace-nowrap">
-              LI @{linkedin.split('/').pop()}
+            <Link href={linkedin} target="_blank" className="whitespace-nowrap flex items-center">
+              <Icons.LinkedIn /> @{linkedin.split('/').pop()}
             </Link>
             <p>
               {name} @ {new Date().getFullYear()}
             </p>
-            <Link href={github} target="_blank" className="link-discrete">
-              GH @{github.split('/').pop()}
+            <Link href={github} target="_blank" className="link-discrete flex items-center">
+              <Icons.Github /> @{github.split('/').pop()}
             </Link>
           </div>
         </footer>

@@ -1,13 +1,12 @@
-import './global.css'
-import type { Metadata } from 'next'
-import { Navbar } from './components/nav'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import Footer from './components/footer'
-import { baseUrl } from './sitemap'
-import { Manrope, Fira_Code } from 'next/font/google'
 import clsx from 'clsx'
-import Provider from './provider'
+import type { Metadata } from 'next'
+import { Fira_Code, Manrope } from 'next/font/google'
+import Footer from './components/footer'
+import { Navbar } from './components/nav'
+import './global.css'
+import { baseUrl } from './sitemap'
 
 const manrope = Manrope({
   subsets: ['latin'],
@@ -54,13 +53,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={clsx('text-black bg-white dark:text-white dark:bg-black', manrope.variable, firaCode.variable)}>
       <body className="antialiased mx-4 mt-8 lg:mx-auto" style={{ maxWidth: '210mm' }}>
         <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
-          <Provider>
-            <Navbar />
-            {children}
-            <Footer />
-            <Analytics />
-            <SpeedInsights />
-          </Provider>
+          <Navbar />
+          {children}
+          <Footer />
+          <Analytics />
+          <SpeedInsights />
         </main>
       </body>
     </html>

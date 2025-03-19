@@ -13,7 +13,7 @@ export default [
     'link': 'https://artificial.io',
   },
   {
-    'id': 3,
+    'id': 4,
     'company': 'Chronos',
     'industry': 'wfm',
     'role': 'Product Engineer',
