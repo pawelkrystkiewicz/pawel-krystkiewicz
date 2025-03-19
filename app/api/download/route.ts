@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   const browser = await chromium.launch()
   const page = await browser.newPage()
 
-  const fullUrl = `${process.env.NEXT_PUBLIC_BASE_URL}${path}` // Make sure to set this in env
+  const fullUrl = `${process.env.NEXT_PUBLIC_VERCEL_URL}${path}` // Make sure to set this in env
   await page.goto(fullUrl, { waitUntil: 'networkidle' })
 
   await page.evaluate(elementId => {
