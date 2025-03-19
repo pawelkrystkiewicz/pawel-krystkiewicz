@@ -1,4 +1,7 @@
 import { chromium } from 'playwright'
+import { getBaseUrl } from '@/app/utils/get-base-url'
+
+const baseUrl = getBaseUrl()
 
 export async function POST(req: Request) {
   const { path, name } = await req.json() // You could pass in a route like /report or /invoice
@@ -9,7 +12,7 @@ export async function POST(req: Request) {
   const browser = await chromium.launch()
   const page = await browser.newPage()
 
-  const fullUrl = `${process.env.NEXT_PUBLIC_VERCEL_URL}${path}` // Make sure to set this in env
+  const fullUrl = `${baseUrl}${path}`
   await page.goto(fullUrl, { waitUntil: 'networkidle' })
 
   await page.evaluate(elementId => {

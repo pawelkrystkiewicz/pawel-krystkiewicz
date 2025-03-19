@@ -1,6 +1,7 @@
 import { getArticles } from '@/app/articles/utils'
+import { getBaseUrl } from './utils/get-base-url'
 
-export const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
+export const baseUrl = getBaseUrl()
 
 export default async function sitemap() {
   let articles = getArticles().map(post => ({
