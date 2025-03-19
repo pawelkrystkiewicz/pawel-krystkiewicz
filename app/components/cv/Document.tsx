@@ -1,54 +1,23 @@
-'use client'
-
-import achievements from '@/app/components/cv/data/achievements.json'
-import experience from '@/app/components/cv/data/work-experience.json'
-import { WorkPeriod } from '@/app/types'
-import { calculateTimeDiff } from '@/app/utils/calculate-time-diff'
+import achievements from '@/app/components/cv/achievements.data'
+import experience from '@/app/components/cv/experience.data'
+import education from '@/app/components/cv/education.data'
 import config from '@/config'
-import clsx from 'clsx'
 import Link from 'next/link'
-import { FC, ReactNode } from 'react'
-import { Paragraph, PageBreak, Divider } from './Typography'
+import { AchievementEntry } from './AchievementEntry'
+import { ExperienceEntry } from './ExperienceEntry'
+import { Section } from './Section'
+import { Divider, Paragraph } from './Typography'
+
 const { name, email, linkedin, github, repo, phone } = config
 
-interface WorkDateProps {
-  period: WorkPeriod
-  className?: string
-}
-
-const WorkDate = (props: WorkDateProps) => {
-  const { period, className } = props
-  return (
-    <span className={clsx('text-text-secondary', className)}>
-      {new Date(period.year, period.month - 1).toLocaleDateString('en-US', {
-        month: 'short',
-        year: 'numeric',
-      })}
-    </span>
-  )
-}
-
-interface SectionProps {
-  title?: string
-  children?: ReactNode
-  className?: string
-}
-const Section: FC<SectionProps> = ({ title, children, className }) => {
-  return (
-    <section className={clsx('flex flex-col gap-2', className)}>
-      <h2 className="text-3xl font-bold text-text-secondary">{title}</h2>
-      <Divider />
-      <div className="">{children}</div>
-    </section>
-  )
-}
-
-const DEBUG = false
+const DEBUG = true
 
 export const Document = () => {
   return (
     <>
-      <div className="print:px-5 grid grid-cols-3 gap-y-6 gap-x-8 text-sm border border-border/10 rounded-[1px] relative" id="printable">
+      <div
+        className="print:p-5 grid grid-cols-3 gap-y-6 gap-x-8 text-sm border border-border/10 rounded-[1px] relative"
+        id="printable">
         <div
           className="absolute top-0 left-0 border border-error print:hidden"
           style={{
@@ -83,11 +52,16 @@ export const Document = () => {
               applications.
             </Paragraph>
             <Paragraph>
-              Specializing in React, TypeScript with a good eye for modern UI/UX. Author of{' '}
-              <Link href={'https://www.creation-ui.com'} target="_blank" className="link-discrete">
-                Creation UI
-              </Link>{' '}
-              design system.
+              Specializing in React, TypeScript with a good eye for modern UI/UX.
+              {config.flags.cui && (
+                <>
+                  {' '}Author of{' '}
+                  <Link href={'https://www.creation-ui.com'} target="_blank" className="link-discrete">
+                    Creation UI
+                  </Link>{' '}
+                  design system.
+                </>
+              )}
             </Paragraph>
             <Paragraph>
               My projects are high-performance, scalable applications that contribute to products that drive real
@@ -98,47 +72,17 @@ export const Document = () => {
         <Section title="work experience" className="col-span-2 col-start-2">
           <div className="flex flex-col gap-4 relative">
             {experience.map(exp => (
-              <div className="relative group cursor-default" key={exp.id}>
-                <div className="flex justify-between gap-2">
-                  <div className="col-span-2 flex flex-col">
-                    <p className="text-base font-semibold ">{exp.role}</p>
-                    <p className="text-text-secondary">
-                      <WorkDate period={exp.start} /> - {exp.end ? <WorkDate period={exp.end} /> : 'Present'}
-                    </p>
-                  </div>
-                  <div className="flex flex-col text-right">
-                    <div className="flex gap-1 items-center">
-                      <span className="text-text-secondary">{calculateTimeDiff(exp.start, exp.end)} @</span>
-                      {exp.link ? (
-                        <Link
-                          href={exp.link}
-                          target="_blank"
-                          className="link-descrete micro-interactions text-base font-medium "
-                          title="Company website">
-                          {exp.company}
-                        </Link>
-                      ) : (
-                        <span className="text-base font-medium">{exp.company}</span>
-                      )}
-                    </div>
-                    <div className="flex gap-1 items-center text-right">
-                      <p className="text-text-secondary">{exp.industry} | </p>
-                      <p className="text-text-secondary">{exp.location}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <ExperienceEntry key={exp.id} experience={exp} />
             ))}
           </div>
         </Section>
 
         <Section title="personality" className="col-start-1 row-start-4">
           <div className="flex flex-col gap-2 text-pretty">
-            <p>
+            <Paragraph>
               Easy going with a strong work ethic. Creative and quick learner. Problem solver and solution-oriented team
               player.
-            </p>
-            <p>Amongst teammates often nicknamed "the executor" - every task gets done.</p>
+            </Paragraph>
           </div>
         </Section>
 
@@ -156,45 +100,40 @@ export const Document = () => {
         <Section title="key achievements" className="col-span-2 text-pretty col-start-2 row-start-2">
           <div className="flex flex-col gap-2">
             {achievements.map(achievement => (
-              <div key={achievement.company} className="flex flex-col gap-1">
-                <h4 className="font-bold">
-                  {achievement.project && <span className="text-text-secondary">{achievement.project} @</span>}
-                  {achievement.company}
-                </h4>
-                {achievement.entries.map(entry => (
-                  <p
-                    key={entry.description}
-                    className="pl-2 before:content-['-'] before:text-text-secondary before:mr-1"
-                    dangerouslySetInnerHTML={{
-                      __html: entry.description,
-                    }}
-                  />
-                ))}
-              </div>
+              <AchievementEntry key={achievement.company} achievement={achievement} />
             ))}
           </div>
         </Section>
-        <Section title="education" className=" col-start-2 col-span-1  row-start-4">
-          <p className="font-bold text-base">Poznan University of Technology (PUT)</p>
-          <p className="text-text-secondary">2013–2018 M.Sc. Eng in Mechatronics</p>
+        <Section title="education" className=" col-start-2 col-span-2">
+          <div className="flex flex-col gap-4 relative">
+            {education.map(exp => (
+              <ExperienceEntry key={exp.id} experience={exp} showExpTime={false} />
+            ))}
+          </div>
         </Section>
-        <Section title="languages" className="col-start-3 col-span-1 row-start-4">
-          <tbody>
-            <tr>
-              <td className="pr-4">English</td>
-              <td>C1</td>
-            </tr>
-            <tr>
-              <td className="pr-4">Polish</td>
-              <td>Native</td>
-            </tr>
-          </tbody>
+        <Section title="languages" className="col-start-2 col-span-2 row-start-5">
+          <div className="flex gap-2">
+            <div className="font-semibold">English</div>
+            <div>C1</div>
+          </div>
+          <div className="flex gap-2">
+            <div className="font-semibold">Polish</div>
+            <div>Native</div>
+          </div>
         </Section>
         <footer className="text-sm text-text-secondary col-span-3">
-          <Divider className="bg-text-primary" />
-          <p>
-            {name} @ {new Date().getFullYear()}
-          </p>
+          <Divider className="block mb-1" />
+          <div className="flex justify-between">
+            <Link href={linkedin} target="_blank" className="whitespace-nowrap">
+              LI @{linkedin.split('/').pop()}
+            </Link>
+            <p>
+              {name} @ {new Date().getFullYear()}
+            </p>
+            <Link href={github} target="_blank" className="link-discrete">
+              GH @{github.split('/').pop()}
+            </Link>
+          </div>
         </footer>
       </div>
     </>

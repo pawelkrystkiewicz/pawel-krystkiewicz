@@ -7,13 +7,13 @@ export type Achievement = {
 export type WorkPeriod = { month: number; year: number }
 
 export type Experience = {
-  link?: string
   company: string
-  industry: string
   role: string
   start: WorkPeriod
   end?: WorkPeriod
   location: string
   id: number
   stack?: string[]
+  industry?: string
+  link?: string
 }
