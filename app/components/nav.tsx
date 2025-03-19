@@ -1,6 +1,9 @@
-import Link from 'next/link'
+import config from '@/config'
+import { NavigationItem, NavigationItemProps } from './NavigationItem'
 
-const navItems = {
+const lastName = config.name.split(' ').pop()?.toLocaleLowerCase()
+
+const navItems: Record<string, Omit<NavigationItemProps, 'path'>> = {
   '/': {
     name: 'Home',
   },
@@ -9,6 +12,7 @@ const navItems = {
   },
   '/cv': {
     name: 'CV',
+    downloadFilename: `cv-${lastName}`,
   },
 }
 
@@ -20,15 +24,8 @@ export function Navbar() {
           className="flex flex-row items-start relative px-0 pb-0 fade md:overflow-auto scroll-pr-6 md:relative"
           id="nav">
           <div className="flex flex-row space-x-0 pr-10">
-            {Object.entries(navItems).map(([path, { name }]) => {
-              return (
-                <Link
-                  key={path}
-                  href={path}
-                  className="transition-all hover:text-neutral-800 dark:hover:text-neutral-200 flex align-middle relative py-1 px-2 m-1">
-                  {name}
-                </Link>
-              )
+            {Object.entries(navItems).map(([path, { name, downloadFilename }]) => {
+              return <NavigationItem key={path} path={path} name={name} downloadFilename={downloadFilename} />
             })}
           </div>
         </nav>
