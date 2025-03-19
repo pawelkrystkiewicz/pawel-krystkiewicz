@@ -12,8 +12,9 @@ export const Downloader = ({ filename, pagePath }: DownloaderProps) => {
 
   return (
     <button
-      className="text-primary cursor-pointer  hover:text-primary/80 flex items-center gap-1"
-      onClick={handleExport.bind(null)}>
+      className='text-primary cursor-pointer  hover:text-primary/80 flex items-center gap-1'
+      onClick={handleExport.bind(null)}
+    >
       <Icons.Download /> Download
     </button>
   )

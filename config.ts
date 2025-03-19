@@ -14,7 +14,8 @@ const config = {
     articles: false,
   },
   startDate: START_DATE,
-  totalExperience: new Date().getFullYear() - new Date(START_DATE).getFullYear(),
+  totalExperience:
+    new Date().getFullYear() - new Date(START_DATE).getFullYear(),
 }
 
 export default config

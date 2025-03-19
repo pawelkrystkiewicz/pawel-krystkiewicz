@@ -12,7 +12,7 @@ export const Paragraph: FC<ParagraphProps> = ({ children, className }) => {
 }
 
 export const PageBreak = () => {
-  return <div className="page-break" />
+  return <div className='page-break' />
 }
 
 const dividerClasses = cva(['bg-text-secondary/60'], {
@@ -41,6 +41,12 @@ interface DividerProps {
   thickness?: DividerClassTypes['thickness']
 }
 
-export const Divider: FC<DividerProps> = ({ className, orientation, thickness }) => (
-  <span className={clsx(dividerClasses({ orientation, thickness }), className)} />
+export const Divider: FC<DividerProps> = ({
+  className,
+  orientation,
+  thickness,
+}) => (
+  <span
+    className={clsx(dividerClasses({ orientation, thickness }), className)}
+  />
 )

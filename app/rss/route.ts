@@ -13,15 +13,15 @@ export async function GET() {
       return 1
     })
     .map(
-      (post) =>
+      post =>
         `<item>
           <title>${post.metadata.title}</title>
           <link>${baseUrl}/articles/${post.slug}</link>
           <description>${post.metadata.summary || ''}</description>
           <pubDate>${new Date(
-            post.metadata.publishedAt
+            post.metadata.publishedAt,
           ).toUTCString()}</pubDate>
-        </item>`
+        </item>`,
     )
     .join('\n')
 

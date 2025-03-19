@@ -18,16 +18,14 @@ export function PostedArticles() {
         .map(post => (
           <Link
             key={post.slug}
-            className="flex flex-col space-y-1 mb-4"
+            className='flex flex-col space-y-1 mb-4'
             href={`/articles/${post.slug}`}
           >
-            <div className="w-full  grid grid-cols-[auto_1fr] gap-4">
-              <p className=" tabular-nums">
+            <div className='w-full  grid grid-cols-[auto_1fr] gap-4'>
+              <p className=' tabular-nums'>
                 {formatDate(post.metadata.publishedAt, false)}
               </p>
-              <p className="tracking-tight">
-                {post.metadata.title}
-              </p>
+              <p className='tracking-tight'>{post.metadata.title}</p>
             </div>
           </Link>
         ))}

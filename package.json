@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "clear:cache": "rm -rf .next",
-    "nuke:cache": "rm -rf .next && rm -rf node_modules && bun i"
+    "nuke:cache": "rm -rf .next && rm -rf node_modules && bun i",
+    "lint": "next lint",
+    "prettify": "prettier --write ."
   },
   "dependencies": {
     "@vercel/analytics": "^1.1.3",

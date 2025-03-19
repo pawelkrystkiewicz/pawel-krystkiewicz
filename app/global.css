@@ -3,7 +3,7 @@
 :root {
   --text-primary: oklch(0 0 0);
   --text-secondary: oklch(0.556 0 0);
-  --background-primary: oklch(0.990 0 0);
+  --background-primary: oklch(0.99 0 0);
   --background-secondary: oklch(0.985 0 0);
   --border: oklch(0.87 0 0);
   /* editor */
@@ -22,7 +22,7 @@
     --text-secondary: oklch(0.87 0 0);
     --background-primary: oklch(0.269 0 0);
     --background-secondary: oklch(0.371 0 0);
-    --border: oklch(0.350 0 0);
+    --border: oklch(0.35 0 0);
     /* editor */
     --sh-class: #4c97f8;
     --sh-identifier: white;
@@ -31,11 +31,10 @@
   }
 }
 
-
 @theme {
   /* FONT */
-  --font-sans: "Manrope", "sans-serif";
-  --font-mono: "Fira Code", "monospace";
+  --font-sans: 'Manrope', 'sans-serif';
+  --font-mono: 'Fira Code', 'monospace';
 
   /* COLOR */
   --color-primary: oklch(60.48% 0.2165 257.21);
@@ -50,8 +49,8 @@
   --color-border: var(--border);
 
   /* FONTS */
-  --font-sans: "Manrope", "sans-serif";
-  --font-mono: "Fira Code", "monospace";
+  --font-sans: 'Manrope', 'sans-serif';
+  --font-mono: 'Fira Code', 'monospace';
 
   /* ANIMATIONS */
   --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
@@ -72,8 +71,6 @@
 }
 
 @variant dark (&:where(.dark, .dark *));
-
-
 
 html {
   @apply scroll-smooth min-w-[360px];
@@ -116,7 +113,7 @@ body {
   content: '#';
 }
 
-.prose *:hover>.anchor {
+.prose *:hover > .anchor {
   @apply visible;
 }
 
@@ -175,7 +172,7 @@ body {
   @apply list-decimal pl-6;
 }
 
-.prose> :first-child {
+.prose > :first-child {
   /* Override removing top margin, causing layout shift */
   margin-top: 1.25em !important;
   margin-bottom: 1.25em !important;
@@ -224,12 +221,10 @@ table {
 }
 
 .link-descrete {
-
   &:hover {
     @apply text-primary;
   }
 }
-
 
 @media print {
   body * {

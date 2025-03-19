@@ -29,23 +29,24 @@ const items = [
 
 export default function Footer() {
   return (
-    <footer className="sm:flex sm:flex-col sm:items-center">
-      <ul className="text-sm mt-8 flex flex-col space-x-0 space-y-2 md:flex-row md:space-x-4 md:space-y-0 text-text-secondary">
+    <footer className='sm:flex sm:flex-col sm:items-center'>
+      <ul className='text-sm mt-8 flex flex-col space-x-0 space-y-2 md:flex-row md:space-x-4 md:space-y-0 text-text-secondary'>
         {items.map(({ href, text, icon: Icon }) => (
           <li key={href}>
             <Link
-              className="flex items-center micro-interactions link-descrete gap-1"
-              rel="noopener noreferrer"
-              target="_blank"
+              className='flex items-center micro-interactions link-descrete gap-1'
+              rel='noopener noreferrer'
+              target='_blank'
               href={href}
-              title={text}>
+              title={text}
+            >
               <Icon />
-              <span className="sm:hidden block">{text}</span>
+              <span className='sm:hidden block'>{text}</span>
             </Link>
           </li>
         ))}
       </ul>
-      <p className="mt-8 text-neutral-600 dark:text-neutral-300 text-xs text-center">
+      <p className='mt-8 text-neutral-600 dark:text-neutral-300 text-xs text-center'>
         {name} © {new Date().getFullYear()} MIT Licensed
       </p>
     </footer>

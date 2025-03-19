@@ -1,4 +1,10 @@
-export const downloadPdf = async ({ path, name }: { path: string; name: string }) => {
+export const downloadPdf = async ({
+  path,
+  name,
+}: {
+  path: string
+  name: string
+}) => {
   const requestedAt = new Date()
   const simpleDate = requestedAt.toLocaleDateString('en-US', {
     year: 'numeric',

@@ -11,22 +11,29 @@ export interface NavigationItemProps {
   downloadFilename?: string
 }
 
-export const NavigationItem: FC<NavigationItemProps> = ({ path, name, downloadFilename }) => {
+export const NavigationItem: FC<NavigationItemProps> = ({
+  path,
+  name,
+  downloadFilename,
+}) => {
   const pathname = usePathname()
   const isActive = useMemo(() => pathname === path, [pathname, path])
 
   return (
-    <div key={path} className="flex items-center">
+    <div key={path} className='flex items-center'>
       <Link
         key={path}
         href={path}
         className={clsx(
           'micro-interactions flex link-descrete align-middle relative py-1 px-2 m-1',
           isActive && 'font-bold',
-        )}>
+        )}
+      >
         {name}
       </Link>
-      {downloadFilename && isActive && <Downloader filename={downloadFilename} pagePath={path} />}
+      {downloadFilename && isActive && (
+        <Downloader filename={downloadFilename} pagePath={path} />
+      )}
     </div>
   )
 }
