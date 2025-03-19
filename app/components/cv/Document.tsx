@@ -8,9 +8,9 @@ import { ExperienceEntry } from './ExperienceEntry'
 import { Section } from './Section'
 import { Divider, Paragraph } from './Typography'
 
-const { name, email, linkedin, github, repo, phone } = config
+const { name, email, linkedin, github, phone } = config
 
-const DEBUG = true
+const DEBUG = false
 
 export const Document = () => {
   return (
@@ -55,7 +55,8 @@ export const Document = () => {
               Specializing in React, TypeScript with a good eye for modern UI/UX.
               {config.flags.cui && (
                 <>
-                  {' '}Author of{' '}
+                  {' '}
+                  Author of{' '}
                   <Link href={'https://www.creation-ui.com'} target="_blank" className="link-discrete">
                     Creation UI
                   </Link>{' '}
@@ -67,6 +68,7 @@ export const Document = () => {
               My projects are high-performance, scalable applications that contribute to products that drive real
               business impact.
             </Paragraph>
+            <Paragraph>Strong believer in empathy-driven design and accessibility.</Paragraph>
           </div>
         </Section>
         <Section title="work experience" className="col-span-2 col-start-2">
@@ -77,16 +79,7 @@ export const Document = () => {
           </div>
         </Section>
 
-        <Section title="personality" className="col-start-1 row-start-4">
-          <div className="flex flex-col gap-2 text-pretty">
-            <Paragraph>
-              Easy going with a strong work ethic. Creative and quick learner. Problem solver and solution-oriented team
-              player.
-            </Paragraph>
-          </div>
-        </Section>
-
-        <Section title="skills" className="col-start-1 row-start-3">
+        <Section title="skills" className="col-start-1 row-start-3 row-span-3">
           <div className="flex flex-col gap-2 text-pretty">
             <Paragraph>Excellent knowledge of JavaScript and TypeScript (ES6+, OOP, FP)</Paragraph>
             <Paragraph>
