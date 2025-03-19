@@ -1,7 +1,28 @@
-import { chromium } from 'playwright'
 import { getBaseUrl } from '@/app/utils/get-base-url'
+import puppeteerCore from 'puppeteer-core'
+import puppeteer from 'puppeteer'
+import chromium from '@sparticuz/chromium'
 
 const baseUrl = getBaseUrl()
+
+export const dynamic = 'force-dynamic'
+
+async function getBrowser() {
+  if (process.env.VERCEL_ENV === 'production') {
+    const executablePath = await chromium.executablePath()
+
+    const browser = await puppeteerCore.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath,
+      headless: true,
+    })
+    return browser
+  } else {
+    const browser = await puppeteer.launch()
+    return browser
+  }
+}
 
 export async function POST(req: Request) {
   const { path, name } = await req.json() // You could pass in a route like /report or /invoice
@@ -9,22 +30,15 @@ export async function POST(req: Request) {
     return new Response('Missing or invalid path', { status: 400 })
   }
 
-  const browser = await chromium.launch()
+  const browser = await getBrowser()
+
   const page = await browser.newPage()
 
   const fullUrl = `${baseUrl}${path}`
-  await page.goto(fullUrl, { waitUntil: 'networkidle' })
-
-  await page.evaluate(elementId => {
-    const element = document.getElementById(elementId)
-    if (element) {
-      document.body.innerHTML = ''
-      document.body.appendChild(element.cloneNode(true))
-    }
-  }, 'printable')
+  await page.goto(fullUrl, { waitUntil: 'networkidle0' })
 
   const pdfBuffer = await page.pdf({
-    format: 'A4',
+    format: 'a4',
     printBackground: true,
     displayHeaderFooter: false,
     preferCSSPageSize: true,
