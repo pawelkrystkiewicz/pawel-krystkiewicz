@@ -1,4 +1,4 @@
-import { BlogPosts } from 'app/components/posts'
+import { BlogPosts } from 'app/components/Posts'
 import Link from 'next/link'
 import config from '../config'
 
