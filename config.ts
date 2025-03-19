@@ -11,6 +11,7 @@ const config = {
   phone: '+48 501 287 748',
   flags: {
     cui: false,
+    articles:true
   },
   startDate: START_DATE,
   totalExperience: new Date().getFullYear() - new Date(START_DATE).getFullYear(),

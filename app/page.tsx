@@ -1,6 +1,10 @@
-import { BlogPosts } from 'app/components/Posts'
 import Link from 'next/link'
 import config from '../config'
+import { Paragraph } from './components/cv/Typography'
+import achievementsData from './components/cv/achievements.data'
+import { AchievementEntry } from './components/cv/AchievementEntry'
+import { BlogPosts } from './components/Posts'
+import Icons from './components/Icons'
 
 const { title, description, flags, totalExperience } = config
 
@@ -11,9 +15,9 @@ export default function Page() {
         <h1 className="text-3xl font-extrabold tracking-tighter">{title}</h1>
         <p className="mb-8">{description}</p>
       </div>
-      <p className="mb-4 text-lg">
-        I'm a web developer with {totalExperience} years of experience crafting high-performance, scalable applications.
-        Specializing in React, TypeScript and modern UI/UX.
+      <Paragraph className="mb-4 text-lg">
+        I'm a web developer with {totalExperience} years of experience crafting well designed and impactful
+        applications. Specializing in React, TypeScript with a good eye for modern UI/UX.
         {flags.cui && (
           <>
             {' '}
@@ -24,12 +28,32 @@ export default function Page() {
             design system.
           </>
         )}
-      </p>
-      <p> Your business idea into seamless digital experiences.</p>
+      </Paragraph>
+      <Paragraph className="text-lg">
+        Want to build something together? Check if we are a good fit{' '}
+        <Link href="/cv" className="link">
+          here
+        </Link>
+      </Paragraph>
+
       <div className="my-8">
-        <h2 className="font-semibold text-xl mb-4">Latest Articles</h2>
-        <BlogPosts />
+        <h2 className="font-semibold text-xl mb-4 flex items-center gap-2">
+          <Icons.Trophy />
+          Latest Wins
+        </h2>
+        <AchievementEntry achievement={achievementsData[0]} />
       </div>
+      {flags.articles && (
+        <div className="my-8">
+          <h2 className="font-semibold text-xl mb-4 flex items-center gap-2">
+            <Icons.Article />
+          <Link href="/articles" className="link-discrete">
+            Articles
+          </Link>
+        </h2>
+          <BlogPosts />
+        </div>
+      )}
     </section>
   )
 }

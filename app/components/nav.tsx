@@ -2,14 +2,16 @@ import config from '@/config'
 import { NavigationItem, NavigationItemProps } from './NavigationItem'
 
 const lastName = config.name.split(' ').pop()?.toLocaleLowerCase()
-
+const { flags } = config
 const navItems: Record<string, Omit<NavigationItemProps, 'path'>> = {
   '/': {
     name: 'Home',
   },
-  '/blog': {
-    name: 'Blog',
-  },
+  ...(flags.articles && {
+    '/articles': {
+      name: 'Articles',
+    },
+  }),
   '/cv': {
     name: 'CV',
     downloadFilename: `cv-${lastName}`,

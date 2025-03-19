@@ -92,9 +92,7 @@ export const Document = () => {
         </Section>
         <Section title="key achievements" className="col-span-2 text-pretty col-start-2 row-start-2">
           <div className="flex flex-col gap-2">
-            {achievements.map(achievement => (
-              <AchievementEntry key={achievement.company} achievement={achievement} />
-            ))}
+            <AchievementEntry achievement={achievements[0]} />
           </div>
         </Section>
         <Section title="education" className=" col-start-2 col-span-2">
