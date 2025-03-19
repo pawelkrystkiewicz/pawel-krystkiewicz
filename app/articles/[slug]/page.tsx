@@ -56,7 +56,6 @@ export default async function Article({ params }) {
   }
 
   const { slug } = await params
-  console.log(slug)
   let post = getArticles().find(post => post.slug === slug)
 
   if (!post) {
