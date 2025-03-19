@@ -38,7 +38,8 @@ export const ExperienceEntry: FC<ExperienceEntryProps> = ({ experience: exp, sho
           <p className="text-text-secondary">
             {exp.industry && (
               <>
-                {exp.industry} <Divider thickness={1} orientation={'vertical'} />{' '}
+                {exp.industry}{' '}
+                <Divider thickness={1} orientation={'vertical'} className="inline-block !h-3 mx-1" />{' '}
               </>
             )}
             {exp.location}
