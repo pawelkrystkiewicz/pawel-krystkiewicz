@@ -1,6 +1,6 @@
 import config from '@/config'
-import Icons from './Icons'
 import Link from 'next/link'
+import Icons from './Icons'
 
 const { name, linkedin, github, repo } = config
 
@@ -46,6 +46,7 @@ export default function Footer() {
           </li>
         ))}
       </ul>
+
       <p className='mt-8 text-neutral-600 dark:text-neutral-300 text-xs text-center'>
         {name} © {new Date().getFullYear()} MIT Licensed
       </p>

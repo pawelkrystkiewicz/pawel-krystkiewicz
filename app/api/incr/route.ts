@@ -40,6 +40,8 @@ export async function POST(req: Request) {
       new Response(null, { status: 202 })
     }
   }
-  await redis.incr([projectConfig.projectId, 'pageviews', slug].join(':'))
+  await redis.incr(
+    [projectConfig.projectId, 'pageviews', slug ?? 'home'].join(':'),
+  )
   return new Response(null, { status: 202 })
 }
