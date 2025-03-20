@@ -2,13 +2,15 @@
 
 import { downloadPdf } from '@/app/utils/download-pdf'
 import Icons from '../Icons'
-interface DownloaderProps {
-  filename: string
-  pagePath: string
-}
+import { useState } from 'react'
 
-export const Downloader = ({ filename, pagePath }: DownloaderProps) => {
-  const handleExport = () => downloadPdf({ path: pagePath, name: filename })
+export const Downloader = () => {
+  const [isLoading, setIsLoading] = useState(false)
+  const handleExport = async () => {
+    setIsLoading(true)
+    await downloadPdf()
+    setIsLoading(false)
+  }
 
   return (
     <button
@@ -16,6 +18,7 @@ export const Downloader = ({ filename, pagePath }: DownloaderProps) => {
       onClick={handleExport.bind(null)}
     >
       <Icons.Download /> Download
+      {/* {isLoading && <Spinner />} */}
     </button>
   )
 }

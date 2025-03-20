@@ -1,0 +1,14 @@
+name: After Deploy PDF Generation
+
+on:
+  deployment_status:
+
+jobs:
+  generate-pdf:
+    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger after-deploy PDF generation
+        run: |
+          echo "Deployment succeeded. Triggering PDF generation..."
+          curl -X POST "${{ github.event.deployment_status.environment_url }}/api/upload-blob"
