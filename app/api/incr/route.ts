@@ -1,5 +1,5 @@
 import { Redis } from '@upstash/redis'
-
+import projectConfig from '@/config'
 const redis = Redis.fromEnv()
 export const config = {
   runtime: 'edge',
@@ -40,6 +40,6 @@ export async function POST(req: Request) {
       new Response(null, { status: 202 })
     }
   }
-  await redis.incr(['pageviews', slug].join(':'))
+  await redis.incr([projectConfig.projectId, 'pageviews', slug].join(':'))
   return new Response(null, { status: 202 })
 }

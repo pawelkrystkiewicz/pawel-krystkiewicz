@@ -1,6 +1,7 @@
 const START_DATE = '2017-07-15'
 
 const config = {
+  projectId: 'pk',
   name: 'Paweł Krystkiewicz',
   title: 'Engineer, Designer, Developer',
   description: 'Building Scalable, Impactful Software',

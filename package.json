@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@sparticuz/chromium": "^133.0.0",
+    "@upstash/redis": "^1.34.5",
     "@vercel/analytics": "^1.1.3",
     "@vercel/speed-insights": "^1.0.9",
     "class-variance-authority": "^0.7.1",
