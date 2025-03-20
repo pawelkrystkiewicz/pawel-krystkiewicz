@@ -50,7 +50,9 @@ export const metadata: Metadata = {
 }
 
 const redis = Redis.fromEnv()
-const ALL_PAGES = [...ROUTES, ...ARTICLES.map(a => a.slug)]
+const ALL_PAGES = ['home', ...ROUTES, ...ARTICLES.map(a => a.slug)].filter(
+  Boolean,
+)
 
 export default async function RootLayout({
   children,
@@ -59,7 +61,7 @@ export default async function RootLayout({
 }) {
   const views = (
     await redis.mget<number[]>(
-      ...ALL_PAGES.map(p => [config.projectId, 'pageviews', p ?? 'home'].join(':')),
+      ...ALL_PAGES.map(p => [config.projectId, 'pageviews', p].join(':')),
     )
   ).reduce(
     (acc, v, i) => {
@@ -75,10 +77,10 @@ export default async function RootLayout({
         <main className='flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0'>
           <Navbar />
           {children}
-          <Footer/>
+          <Footer />
           <Analytics />
           <SpeedInsights />
-          <CurrentPageViews views={views} className='fixed bottom-2 right-2'/>
+          <CurrentPageViews views={views} className='fixed bottom-2 right-2' />
         </main>
       </body>
     </html>

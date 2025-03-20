@@ -14,10 +14,10 @@ export const CurrentPageViews = ({
   className,
 }: CurrentPageViewsProps) => {
   const pathname = usePathname()
-  const pageViews = useMemo(
-    () => views[pathname.replace('/', '') ?? 'home'],
-    [views, pathname],
-  )
+  const pageViews = useMemo(() => {
+    const normalizedPathname = pathname.replace('/', '')
+    return normalizedPathname ? views[normalizedPathname] : views['home']
+  }, [views, pathname])
 
   return (
     <span
