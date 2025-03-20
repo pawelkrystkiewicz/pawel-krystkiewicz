@@ -3,6 +3,7 @@ import { CustomMDX } from 'app/components/Mdx'
 import { formatDate, getArticles } from '@/app/articles/utils'
 import { baseUrl } from 'app/sitemap'
 import config from '@/config'
+import { ReportView } from '@/app/components/ReportView'
 
 export async function generateStaticParams() {
   let posts = getArticles()
@@ -105,6 +106,7 @@ export default async function Article({ params }) {
         <article className='prose'>
           <CustomMDX source={post.content} />
         </article>
+        <ReportView slug={post.slug} />
       </section>
     )
   } catch (error) {

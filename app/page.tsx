@@ -5,11 +5,12 @@ import achievementsData from './components/cv/achievements.data'
 import { AchievementEntry } from './components/cv/AchievementEntry'
 import { PostedArticles } from './components/Posts'
 import Icons from './components/Icons'
+import { ReportView } from './components/ReportView'
 
 const { title, description, flags, totalExperience } = config
 
 export default function Page() {
-  return (
+  return (<>
     <section className='flex flex-col gap-4'>
       <div className='flex flex-col gap-1'>
         <h1 className='text-3xl font-extrabold tracking-tighter'>{title}</h1>
@@ -60,5 +61,7 @@ export default function Page() {
         </div>
       )}
     </section>
+    <ReportView slug={'home'} />
+    </>
   )
 }
