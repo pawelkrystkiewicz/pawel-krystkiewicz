@@ -19,8 +19,7 @@ export async function POST(req: Request) {
     return new Response('Slug not found', { status: 400 })
   }
   const ip = req.headers.get('x-forwarded-for')
-  console.log('ip', ip)
-  console.log('headers', req.headers)
+  
   if (ip) {
     // Hash the IP in order to not store it directly in your db.
     const buf = await crypto.subtle.digest(
