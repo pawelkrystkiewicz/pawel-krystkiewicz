@@ -16,17 +16,21 @@ export const Document = () => {
   return (
     <>
       <div
-        className='print:p-5 grid grid-cols-1 md:grid-cols-3 gap-y-6 gap-x-8 text-sm border border-border/10 rounded-[1px] relative'
+        className='print:p-5 grid grid-cols-1 md:grid-cols-3 gap-y-6 gap-x-8 text-sm rounded-[1px]'
         id='printable'
+        style={{
+          maxWidth: '210mm',
+        }}
       >
-        <div
-          className='absolute top-0 left-0 border border-error print:hidden'
-          style={{
-            height: '297mm',
-            width: '210mm',
-            visibility: DEBUG ? 'visible' : 'hidden',
-          }}
-        />
+        {DEBUG && (
+          <div
+            className='absolute top-0 left-0 border border-error print:hidden'
+            style={{
+              height: '297mm',
+              width: '210mm',
+            }}
+          />
+        )}
         <header className='border-b-2 border-border pb-4 mb-4 grid grid-cols-1 md:grid-cols-3 col-span-1 md:col-span-3'>
           <div className='text-4xl  font-extrabold'>{name}</div>
           <div className='text-xl self-end'>
@@ -99,7 +103,10 @@ export const Document = () => {
             <AchievementEntry achievement={achievements[0]} />
           </div>
         </Section>
-        <Section title='work experience' className='col-span-1 md:col-span-2 md:col-start-2'>
+        <Section
+          title='work experience'
+          className='col-span-1 md:col-span-2 md:col-start-2'
+        >
           <div className='flex flex-col gap-4 relative'>
             {experience.map(exp => (
               <ExperienceEntry key={exp.id} experience={exp} />
@@ -107,7 +114,10 @@ export const Document = () => {
           </div>
         </Section>
 
-        <Section title='skills' className='col-start-1 md:row-start-3 md:row-span-3'>
+        <Section
+          title='skills'
+          className='col-start-1 md:row-start-3 md:row-span-3'
+        >
           <div className='flex flex-col gap-2 text-pretty'>
             <Paragraph>
               Excellent knowledge of JavaScript and TypeScript (ES6+, OOP, FP)
@@ -126,7 +136,10 @@ export const Document = () => {
           </div>
         </Section>
 
-        <Section title='education' className='col-span-1 md:col-start-2 md:col-span-2'>
+        <Section
+          title='education'
+          className='col-span-1 md:col-start-2 md:col-span-2'
+        >
           <div className='flex flex-col gap-4 relative'>
             {education.map(exp => (
               <ExperienceEntry
@@ -152,15 +165,15 @@ export const Document = () => {
         </Section>
         <footer className='text-sm text-text-secondary col-span-1 md:col-span-3'>
           <Divider className='block mb-1' />
-          <div className='flex justify-between'>
+          <div className='flex justify-between sm:flex-row flex-col gap-2'>
             <Link
               href={linkedin}
               target='_blank'
-              className='whitespace-nowrap flex items-center'
+              className='whitespace-nowrap items-center hidden md:flex'
             >
               <Icons.LinkedIn /> @{linkedin.split('/').pop()}
             </Link>
-            <p>
+            <p className='hidden md:block'>
               {name} @ {new Date().getFullYear()}
             </p>
             <Link
