@@ -1,4 +1,5 @@
 import { WorkPeriod } from '../types'
+import { clamp } from './clamp'
 
 export const monthDiff = (dateFrom: Date, dateTo: Date) => {
   return (
@@ -17,8 +18,8 @@ export const calculateTimeDiff = (
   const endDate = new Date(_end.year, _end.month - 1)
 
   const months = monthDiff(startDate, endDate)
-  const years = Math.floor(months / 12)
-  const remainingMonths = months % 12
+  const years = clamp(Math.floor(months / 12), 0, 9999)
+  const remainingMonths = clamp(Math.abs(months % 12), 0, 11)
 
   switch (true) {
     case years === 0 && remainingMonths === 0:
