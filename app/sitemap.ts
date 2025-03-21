@@ -7,7 +7,7 @@ export const ARTICLES = getArticles().map(post => ({
   lastModified: post.metadata.publishedAt,
 }))
 
-export const baseUrl = getBaseUrl()
+export const baseUrl = getBaseUrl(process.env.NEXT_PUBLIC_VERCEL_URL!)
 
 export default async function sitemap() {
   let articles = ARTICLES.map(({ slug, lastModified }) => ({

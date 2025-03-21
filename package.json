@@ -9,7 +9,9 @@
     "clear:cache": "rm -rf .next",
     "nuke:cache": "rm -rf .next && rm -rf node_modules && bun i",
     "lint": "next lint",
-    "prettify": "prettier --write ."
+    "prettify": "prettier --write .",
+    "test": "bun vitest",
+    "test:watch": "bun vitest --watch"
   },
   "dependencies": {
     "@sparticuz/chromium": "^133.0.0",
@@ -36,6 +38,7 @@
     "@types/react-dom": "^19.0.4",
     "sugar-high": "^0.6.0",
     "tailwindcss": "4.0.14",
-    "typescript": "5.3.3"
+    "typescript": "5.3.3",
+    "vitest": "^3.0.9"
   }
 }

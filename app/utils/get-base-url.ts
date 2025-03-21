@@ -1,8 +1,6 @@
-export function getBaseUrl() {
-  const rawUrl = process.env.NEXT_PUBLIC_VERCEL_URL
-
+export function getBaseUrl(rawUrl: string): string {
   if (!rawUrl) {
-    throw new Error('NEXT_PUBLIC_VERCEL_URL is not set')
+    throw new Error('URL not provided')
   }
 
   const finalUrl =
@@ -11,9 +9,9 @@ export function getBaseUrl() {
       : `https://${rawUrl}`
 
   try {
-    new URL(finalUrl) // Validate URL
+    new URL(finalUrl)
   } catch {
-    throw new Error(`Invalid NEXT_PUBLIC_VERCEL_URL: ${finalUrl}`)
+    throw new Error('Invalid URL')
   }
 
   return finalUrl
