@@ -162,7 +162,7 @@ table {
   overflow-x: auto;
   text-wrap: nowrap;
   border-collapse: collapse;
-  @apply text-sm rounded-md overflow-clip shadow;
+  @apply text-sm rounded-md ;
 }
 
 td,
