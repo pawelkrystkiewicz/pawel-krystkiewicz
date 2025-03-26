@@ -1,9 +1,354 @@
 ---
-title: 'Multiple conditions checking and rules engine'
-publishedAt: '2025-03-01'
-summary: 'How to deal with multiple conditions checking in software development'
+title: 'Managing UI Decision Complexity - From Boolean Soup to Business Rules'
+publishedAt: '2024-10-03'
+summary: 'Lessons Learned Building a Custom Rules Engine for UI State Management — case study about challenges (naming things, testability, balancing flexibility vs. simplicity).'
 ---
 
-In software development, we often need to check multiple conditions to determine the next action or decision. This can be particularly challenging when the conditions are complex and the number of checks is large.
+In software development, we often need to check multiple conditions in one step, be it a frontend component or a backend function. In frontend development it will mostly decide about UI state. Let's say there are multiple conditions incoming from different parts of the system: user permission levels , user subscribtion plan, entity state, etc.
 
-One way to handle this is by using a rules engine. A rules engine is a software component that allows you to define and manage complex rules.
+Usually frontend code grows with the complexity of product's business logic. This oftens starts as a simple conditional statements like so:
+
+```jsx
+import React from 'react'
+
+export const App = () => {
+  // authentication logic here
+  const authenticated = useIsAuth()
+  // decide which view to show
+  return authenticated ? <PrivateRoutes /> : <PublicRoutes />
+}
+```
+
+That is very basic conditional logic for displaying private routes only to authenticated (logged in) users.
+
+# When things get complicated
+
+Previous example was very rudimentary. Complexity can grow very quickly as business requirements grow and evolve in Scrum environment. It’s highly likekly more conditions will be added to app’s business logic and be required to check for proper UI display. For this let’s use example of Meta’s Messenger app and the single message entity.
+
+First, we define a simple `Message` entity with all its relevant properties and context:
+
+```tsx
+type Message = {
+  id: string
+  senderId: string
+  recipientId: string
+  sentAt: Date
+  deliveredAt?: Date
+  seenAt?: Date
+  deleted: boolean
+  failed: boolean
+  attachmentsCount: number
+  isPinned: boolean
+  isEdited: boolean
+  isReply: boolean
+  isGroupMessage: boolean
+  currentUserId: string
+}
+```
+
+Below is a table of conditions that control how the UI behaves for each message:
+
+<table border='1' cellspacing='0' cellpadding='5'>
+  <thead>
+    <tr>
+      <th>Condition name</th>
+      <th>Description</th>
+      <th>Example Logic</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>`isSent`</td>
+      <td>Has the message been sent successfully?</td>
+      <td>`!!message.sentAt && !message.failed`</td>
+    </tr>
+    <tr>
+      <td>`isDelivered`</td>
+      <td>Was the message delivered (but maybe not seen)?</td>
+      <td>`!!message.deliveredAt && !message.seenAt`</td>
+    </tr>
+    <tr>
+      <td>`isSeen`</td>
+      <td>Has the message been seen by the recipient?</td>
+      <td>`!!message.seenAt`</td>
+    </tr>
+    <tr>
+      <td>`isFailedToSend`</td>
+      <td>The message failed to send.</td>
+      <td>`message.failed`</td>
+    </tr>
+    <tr>
+      <td>`canEdit`</td>
+      <td>
+        The sender is current user and message is not deleted or failed, and
+        editable time not expired.
+      </td>
+      <td>
+        ``message.senderId === message.currentUserId && !message.deleted &&
+        !message.failed``
+      </td>
+    </tr>
+    <tr>
+      <td>`canDeleteForEveryone`</td>
+      <td>Current user is sender, and it's within a deletion time window.</td>
+      <td>
+        ``message.senderId === message.currentUserId && !message.deleted &&
+        withinDeletionWindow()``
+      </td>
+    </tr>
+    <tr>
+      <td>`showPinnedIcon`</td>
+      <td>Message is pinned in chat.</td>
+      <td>`message.isPinned`</td>
+    </tr>
+    <tr>
+      <td>`showEditedIndicator`</td>
+      <td>The message was edited.</td>
+      <td>`message.isEdited`</td>
+    </tr>
+    <tr>
+      <td>`showReplyPreview`</td>
+      <td>The message is a reply to another message.</td>
+      <td>`message.isReply`</td>
+    </tr>
+    <tr>
+      <td>`showAttachmentIcon`</td>
+      <td>The message has attachments.</td>
+      <td>`message.attachmentsCount > 0`</td>
+    </tr>
+    <tr>
+      <td>`showDeleteButton`</td>
+      <td>Current user is sender or group admin and message not deleted.</td>
+      <td>`message.senderId === message.currentUserId`</td>
+    </tr>
+    <tr>
+      <td>`showFailedIcon`</td>
+      <td>Show error indicator if failed to send.</td>
+      <td>`message.failed`</td>
+    </tr>
+  </tbody>
+</table>
+
+# Visual mapping
+
+- If `isFailedToSend` → show red error icon and retry option.
+- If `isDelivered` but not `isSeen` → show double-check icon in gray.
+- If `isSeen` → show double-check icon in blue.
+- If `canEdit` → show edit button.
+- If `showPinnedIcon` → display pin in corner.
+- If `showReplyPreview` → show small reply preview UI.
+
+Now let’s see how this could be implemented without any clever refactors - just growing codebase overtime.
+
+```tsx
+import React from 'react'
+import {
+  Check,
+  DoubleCheck,
+  Pin,
+  WarningTriangle,
+  Attachment,
+  EditPencil,
+  Reply,
+} from 'iconoir-react'
+import { Message } from './types'
+
+type MessageProps = {
+  message: Message
+  userIsGroupAdmin: boolean
+}
+
+export const OldFlagsMessage: React.FC<MessageProps> = ({
+  message,
+  userIsGroupAdmin,
+}) => {
+  const isSent = !!message.sentAt && !message.failed
+  const isDelivered = !!message.deliveredAt && !message.seenAt
+  const isSeen = !!message.seenAt
+  const isFailedToSend = message.failed
+  const canEdit =
+    message.senderId === message.currentUserId &&
+    !message.deleted &&
+    !message.failed
+
+  return // render
+}
+```
+
+# From terrible mess to terribly clever
+
+The code above is less than ideal especially around readability. As a first step one could certainly refactor all those checks into hooks. But let’s go deeper into this refactor as business requirements will certainly grow as the only constant in life (and especially in software development) is change. The death and taxes are just a derivative of that.
+
+So we want to create a future proof refactor that could possibly be a more robust solution that if necessary could be used in other places of the system. The latter is especcialy good requirement because making this a bit more top level and detached from the very business logic allows to sharing responsibility for this code among many team members. Easing code maintnance and benefiting from sharing idea around this solution.
+
+There are few things those conditions have in common:
+
+- result is boolean flag
+- they can be isolated - are not interdependent
+- they depend on limited source of truth - deciding data passed to the component is a limited set
+
+All this tells us there is solution to this problem that could be expressed as
+
+```tsx
+function a => (payload: LimitedDataSet) => boolean
+```
+
+If we could define all boolean flags as such functions, we could include theme in a data set that could run each function with the same payload and collect result for reach flag. If this is not clever then I hate React.
+
+So, inspired by `eslint` rules and `cva` props evaluation, I created a simple engine that takes an array of `rules` (not nested) and runs each function with provided props. Each `Rule` is represented with its name, and the function that returns boolean. The function evaluates the incoming props and returns a boolean value: a `Flag`.
+
+```tsx
+export type Rules<
+  A = any,
+  K extends string | number | symbol = string,
+> = Record<K, (props: A) => boolean>
+
+export type Flags<K extends string | number | symbol = string> = Record<
+  K,
+  boolean
+>
+```
+
+## Modeling these conditions as a rules object
+
+With the above pattern we can create a set of functions - in this case in an object:
+
+```ts
+//basically component props in our case
+export type MessageRulesArgs = {
+  message: Message
+  userIsGroupAdmin: boolean
+}
+
+// this is definiton of our required flags
+export type MessageRuleSet = {
+  isSent: boolean
+  isDelivered: boolean
+  isSeen: boolean
+  canEdit: boolean
+  showPinnedIcon: boolean
+  showEditedIndicator: boolean
+  showReplyPreview: boolean
+  showAttachmentIcon: boolean
+  showFailedIcon: boolean
+  showDeleteButton: boolean
+}
+
+export type MessageRules = Rules<MessageRulesArgs, keyof MessageRuleSet>
+
+export const messageRules: MessageRules = {
+  isSent: ({ message: m }) => !!m.sentAt && !m.failed,
+  isDelivered: ({ message: m }) => !!m.deliveredAt && !m.seenAt,
+  isSeen: ({ message: m }) => !!m.seenAt,
+  canEdit: ({ message: m }) =>
+    m.senderId === m.currentUserId && !m.deleted && !m.failed,
+  showPinnedIcon: ({ message: m }) => m.isPinned,
+  showEditedIndicator: ({ message: m }) => m.isEdited,
+  showReplyPreview: ({ message: m }) => m.isReply,
+  showAttachmentIcon: ({ message: m }) => m.attachmentsCount > 0,
+  showFailedIcon: ({ message: m }) => m.failed,
+  showDeleteButton: ({ message: m }) =>
+    m.senderId === m.currentUserId && !m.deleted,
+}
+```
+
+With rules defined the remaining thing to do is run evaluate the result with our data. For this I came up with this little helper:
+
+```ts
+import type { Flags, Rules } from './types'
+
+export const applyRules = <
+  A = any,
+  K extends string | number | symbol = string,
+>(
+  rule: Rules<A, K>,
+  args: A,
+): Flags<K> => {
+  return Object.keys(rule).reduce((flags: Flags, key: string) => {
+    const ruleFn = rule[key as K]
+    if (ruleFn) {
+      flags[key] = ruleFn(args)
+    }
+    return flags
+  }, {}) as Flags<K>
+}
+```
+
+Then to use it inside component we can create a hook:
+
+```tsx
+import { useDeepCompareMemo } from 'use-deep-compare'
+import { applyRules } from './apply-rules'
+import { Rules } from '../types'
+
+export const useRules = <
+  RuleSet extends Rules,
+  Args extends Record<string, any>,
+>(
+  rules: RuleSet,
+  args: Args,
+): Record<string, boolean> => {
+  // use a deep compare memo to memoize the result regardless of depth
+  return useDeepCompareMemo(
+    () => applyRules<Args, keyof RuleSet>(rules, args),
+    [rules, args],
+  )
+}
+```
+
+Final usage in React component:
+
+```tsx
+import {
+  Attachment,
+  Check,
+  DoubleCheck,
+  EditPencil,
+  Pin,
+  Reply,
+  WarningTriangle,
+} from 'iconoir-react'
+import React from 'react'
+import { messageRules } from './rules/rules'
+import { useRules } from './rules/rules-hook'
+import { Message, MessageRules, MessageRulesArgs } from './types'
+
+type MessageProps = {
+  message: Message
+  userIsGroupAdmin: boolean
+}
+
+export const WithRulesMessage: React.FC<MessageProps> = ({
+  message,
+  userIsGroupAdmin,
+}) => {
+  const {
+    isSent,
+    isDelivered,
+    isSeen,
+    canEdit,
+    showPinnedIcon,
+    showEditedIndicator,
+    showReplyPreview,
+    showAttachmentIcon,
+    showFailedIcon,
+    showDeleteButton,
+  } = useRules<MessageRules, MessageRulesArgs>(messageRules, {
+    message,
+    userIsGroupAdmin,
+  })
+
+  return //redner
+}
+```
+
+Benefits of this approach
+
+- **Clarity**: Each condition is named and easy to understand.
+- **Reusability**: Components can import and use conditions without duplication.
+- **Testability**: Each rule can be unit-tested independently.
+- **Extensibility**: Adding new rules is simple and low-risk.
+
+## Conclusion
+
+If you find yourself with growing UI complexity and a web of conditions, consider abstracting those checks into a rules object or lightweight engine. It brings structure, clarity, and scalability to what would otherwise become a nightmare of conditionals and a spaghetti code.
