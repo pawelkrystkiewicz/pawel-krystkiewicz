@@ -1,4 +1,4 @@
-import { PostedArticles } from '@/app/components/Posts'
+import { PostedArticles } from '@/components/Posts'
 
 export const metadata = {
   title: 'Articles',

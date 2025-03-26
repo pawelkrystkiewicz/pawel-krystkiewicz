@@ -1,9 +1,9 @@
-import { notFound } from 'next/navigation'
-import { CustomMDX } from 'app/components/Mdx'
 import { formatDate, getArticles } from '@/app/articles/utils'
-import { baseUrl } from 'app/sitemap'
+import { CustomMDX } from '@/components/Mdx'
+import { ReportView } from '@/components/ReportView'
 import config from '@/config'
-import { ReportView } from '@/app/components/ReportView'
+import { baseUrl } from 'app/sitemap'
+import { notFound } from 'next/navigation'
 
 export async function generateStaticParams() {
   let posts = getArticles()

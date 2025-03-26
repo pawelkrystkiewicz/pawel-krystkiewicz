@@ -3,13 +3,13 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import clsx from 'clsx'
 import type { Metadata } from 'next'
 import { Fira_Code, Manrope } from 'next/font/google'
-import { Navbar } from './components/Nav'
+import { Navbar } from '@/components/Nav'
 import './global.css'
 import sitemap, { ARTICLES, baseUrl, ROUTES } from './sitemap'
-import Footer from './components/Footer'
+import Footer from '@/components/Footer'
 import { Redis } from '@upstash/redis'
 import config from '@/config'
-import { CurrentPageViews } from './components/CurrentPageViews'
+import { CurrentPageViews } from '@/components/CurrentPageViews'
 
 const manrope = Manrope({
   subsets: ['latin'],

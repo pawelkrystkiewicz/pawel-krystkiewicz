@@ -11,8 +11,8 @@ const config = {
   repo: 'https://github.com/pawelkrystkiewicz/pawel-krystkiewicz',
   phone: '+48 501 287 748',
   flags: {
-    cui: false,
-    articles: false,
+    cui: true,
+    articles: true,
   },
   startDate: START_DATE,
   totalExperience:
