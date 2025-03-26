@@ -21,8 +21,8 @@ export function PostedArticles() {
             className='flex flex-col space-y-1 mb-4'
             href={`/articles/${post.slug}`}
           >
-            <div className='w-full grid grid-cols-[auto_1fr] gap-4'>
-              <p className='tabular-nums'>
+            <div className='w-full sm:grid sm:grid-cols-[auto_1fr] gap-1 sm:gap-4 flex flex-col mb-2 sm:mb-0'>
+              <p className='tabular-nums sm:text-base text-sm'>
                 {formatDate(post.metadata.publishedAt, false)}
               </p>
               <div className='flex flex-col gap-2'>
