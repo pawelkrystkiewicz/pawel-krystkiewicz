@@ -95,15 +95,18 @@ export default async function Article({ params }) {
             }),
           }}
         />
-        <h1 className='title font-semibold text-2xl tracking-tighter'>
+        <h1 className='title font-semibold text-4xl tracking-tighter mb-2'>
           {post.metadata.title}
         </h1>
+        <p className='text-base text-text-secondary text-pretty'>
+          {post.metadata.summary}
+        </p>
         <div className='flex justify-between items-center mt-2 mb-8 text-sm'>
-          <p className='text-sm text-neutral-600 dark:text-neutral-400'>
+          <p className='text-sm text-text-primary'>
             {formatDate(post.metadata.publishedAt)}
           </p>
         </div>
-        <article className='prose'>
+        <article className='prose sm:prose-sm'>
           <CustomMDX source={post.content} />
         </article>
         <ReportView slug={post.slug} />
