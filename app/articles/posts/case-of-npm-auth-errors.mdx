@@ -1,0 +1,105 @@
+---
+title: 'Lessons Learned: NPM packages publishing and API authorization'
+publishedAt: '2025-03-27'
+summary: 'A case study on how NPM API and local configs can lead to unexpected errors and how to avoid them.'
+---
+
+While refactoring @creation-ui/react to version 15 I tried to publish a new version to npm localy and couldn't due to NPM auth errors.
+
+Here is how it went:
+
+```bash
+
+$ npm publish
+npm WARN ignoring workspace config at /Users/username/GitHub/creation-ui-react/packages/ui/.npmrc
+npm notice
+npm notice 📦  @creation-ui/react@15.0.0
+npm notice === Tarball Contents ===
+npm notice 2.1kB   CHANGELOG.md
+npm notice 1.1kB   LICENSE
+npm notice 1.8kB   README.md
+npm notice 918B    dist/index.css
+npm notice 50.0kB  dist/index.d.mts
+npm notice 50.0kB  dist/index.d.ts
+npm notice 355.1kB dist/index.js
+npm notice 1.0MB   dist/index.js.map
+npm notice 347.2kB dist/index.mjs
+npm notice 1.0MB   dist/index.mjs.map
+npm notice 1.3kB   dist/theme.css
+npm notice 2.2kB   package.json
+npm notice === Tarball Details ===
+npm notice name:          @creation-ui/react
+npm notice version:       15.0.1
+npm notice filename:      creation-ui-react-15.0.0.tgz
+npm notice package size:  547.9 kB
+npm notice unpacked size: 2.9 MB
+npm notice shasum:        769ad59ba78310274a8a34c0933cad161f2ad483
+npm notice integrity:     sha512-rxDCX60g0xg5Z[...]dQiQwVoyqPIOg==
+npm notice total files:   12
+npm notice
+npm notice Publishing to https://registry.npmjs.org with tag latest and public access
+npm ERR! code E404
+npm ERR! 404 Not Found - PUT https://registry.npmjs.org/@creation-ui%2freact - Not found
+npm ERR! 404
+npm ERR! 404  '@creation-ui/react@15.0.0' is not in this registry.
+npm ERR! 404
+npm ERR! 404 Note that you can also install from a
+npm ERR! 404 tarball, folder, http url, or git url.
+
+npm ERR! A complete log of this run can be found in: /Users/username/.npm/_logs/2025-03-27T14_55_04_665Z-debug-0.log
+```
+
+## First things first
+
+When I first started working with NPM API few years back, I learned that `404` is a bit misleading as in fact it is `401 Unauthorized`.
+The whole `401` as `404` thing in systems is really a design decision where any resource that hasn't been found with current privelage level is indeed a not found resource resulting in `404` error code.
+
+It is a common design pattern in frontend: accessing `/user-is-private-route` while not logged in? "Well, we didn't found such route, sorry mate ¯\\\_(ツ)\_/¯"
+Everywhere else it's a bit too close to "security through obscurity" to my linking. But I digress.
+
+The important thing is the NPM said You Shall Not Pass or as cool kids say `401 Not Authorized`. This happenede despite that I had token set up in `.env` that `.npmrc` file should catch on.
+I knew it could be done with extra CLI command but I couldn't be bothered to check it out.
+
+```bash
+# .npmrc
+auto-install-peers=true
+strict-peer-dependencies=false
+@creation-ui:registry=https://registry.npmjs.org
+//registry.npmjs.org/:_authToken=${NPM_TOKEN_AUTOMATION}
+
+```
+
+## To auth or not to auth
+
+But that wasn't the only way to get authorized. So I tried the `npm login`. After successful login in a browser, I still got the same error message.
+
+Bugged out as I was, it suddenly occured to me that I can actually check if I'm logged in by running `npm whoami` command:
+
+```bash
+username@machine ui % npm whoami
+npm WARN ignoring workspace config at /Users/username/GitHub/creation-ui-react/packages/ui/.npmrc
+npm ERR! code E401
+npm ERR! 401 Unauthorized - GET https://registry.npmjs.org/-/whoami
+
+npm ERR! A complete log of this run can be found in: /Users/username/.npm/_logs/2025-03-27T14_55_31_687Z-debug-0.log
+npm ERR! code E401
+npm ERR! Unauthorized - please log in to your npm account to publish this package.
+```
+
+## Crazy right?
+
+At that point I knew that:
+
+- ✅ I logged in successfully
+- ❌ NPM API says I'm not logged in
+- ❌ `NPM_TOKEN_AUTOMATION` is a `undefined`
+
+It was clear to me that how NPM auth works is not clear at all. It seemed that NPM ignores which user is logged in and takes `_authToken` from `.npmrc` file first.
+After closer inspection I figuerd out that token at time had value set to `"${NPM_TOKEN_AUTOMATION}"` because of how I set up my `.npmrc` file.
+
+Removing this line fixed the issue for me:
+
+`//registry.npmjs.org/:_authToken=${NPM_TOKEN_AUTOMATION}`
+
+After that I was able to publish my package to NPM.
+
