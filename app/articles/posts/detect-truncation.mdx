@@ -1,0 +1,231 @@
+---
+title: 'Building a Smart Truncation Detection Hook for React'
+publishedAt: '2024-11-20'
+summary: 'Learn how to create a reusable React hook that detects text truncation in UI elements, enabling intelligent tooltips and responsive design adjustments.'
+---
+
+# The Truncation Detection Problem
+
+In modern UIs, we often truncate text with CSS when it exceeds container bounds:
+
+```css
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+```
+
+This is cool and all but sometimes we need to keep those truncated strings helpful and communicative for our users.
+To that end it would be helpful to know if our string has been truncated or not.
+This knowledge could open such opurtunites as:
+
+- Showing tooltips only when content is truncated
+- Dynamically adjusting layouts
+- Providing expand/collapse functionality
+
+Can we actually detect that?
+
+## Yes, yes we can!
+
+A very rudimentary attempt could be made by checking element dimensions:
+
+```tsx
+const isTruncated = element.scrollWidth > element.clientWidth
+```
+
+While this works OK, it has several limitations:
+
+- Doesn't respond to window resizing
+- Requires "manual" DOM access
+- Definitely lacks React lifecycle awareness
+- Doesn't handle edge cases (like flex containers)
+
+To make this work the best with react we defintely could use a hook.
+
+# Solution
+
+For this to work we need a hook with:
+
+- Type safety with generics
+- ResizeObserver for responsiveness
+- Simple API
+
+
+<br />
+
+```tsx
+import { RefObject, useEffect, useRef, useState } from 'react'
+
+interface UseDetectedTruncation<RefType> {
+  ref: RefObject<RefType>
+  isTruncated: boolean
+}
+
+export const useDetectedTruncation = <
+  RefType extends HTMLElement,
+>(): UseDetectedTruncation<RefType> => {
+  const [isTruncated, setIsTruncated] = useState(false)
+  const elementRef = useRef<RefType>(null)
+
+  const checkTruncation = () => {
+    const element = elementRef.current
+    if (!element) return
+
+    // Check both width and height for multi-line truncation
+    const isWidthTruncated = element.scrollWidth > element.clientWidth
+    const isHeightTruncated = element.scrollHeight > element.clientHeight
+
+    setIsTruncated(isWidthTruncated || isHeightTruncated)
+  }
+
+  useEffect(() => {
+    const element = elementRef.current
+    if (!element) return
+
+    // Initial check
+    checkTruncation()
+
+    // Set up observation
+    const resizeObserver = new ResizeObserver(checkTruncation)
+    resizeObserver.observe(element)
+
+    // MutationObserver for content changes
+    const mutationObserver = new MutationObserver(checkTruncation)
+    mutationObserver.observe(element, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    })
+
+    return () => {
+      resizeObserver.disconnect()
+      mutationObserver.disconnect()
+    }
+  }, [])
+
+  return { ref: elementRef, isTruncated }
+}
+```
+
+### Practical Usage
+
+Here's how to create a smart tooltip component using our hook:
+
+```tsx copy
+import { Tooltip, type TooltipProps } from '@your-ui-library'
+import { twMerge } from 'tailwind-merge'
+
+interface SmartTooltipProps extends React.HTMLAttributes<HTMLSpanElement> {
+  tooltipProps: Omit<TooltipProps, 'content'>
+  content: string
+}
+
+export const SmartTooltip = ({
+  tooltipProps,
+  content,
+  children,
+  className,
+  ...props
+}: SmartTooltipProps) => {
+  const { isTruncated, ref } = useDetectedTruncation<HTMLSpanElement>()
+
+  return (
+    <Tooltip {...tooltipProps} content={isTruncated ? content : undefined}>
+      <span ref={ref} className={twMerge('truncate', className)} {...props}>
+        {children || content}
+      </span>
+    </Tooltip>
+  )
+}
+```
+
+## Performance Considerations
+
+1. Debounce Observations:
+   For frequently resizing elements, consider debouncing the checks:
+
+```ts copy
+const debouncedCheck = useDebounce(checkTruncation, 100)
+```
+
+2. Selective Observation:
+   Only observe necessary attributes:
+
+```ts copy
+resizeObserver.observe(element, { box: 'content-box' })
+```
+
+3. Cleanup:
+   Properly disconnect observers in the cleanup function to prevent memory leaks.
+
+## Testing Strategies
+
+Verify the hook works in different scenarios:
+
+- Static truncated text
+- Dynamically loaded content
+- Responsive layout changes
+- Multi-line truncation (line-clamp)
+- Nested scrolling containers
+
+<br />
+
+```tsx copy
+describe('useDetectedTruncation', () => {
+  it('detects horizontal truncation', () => {
+    const { result } = renderHook(() => useDetectedTruncation())
+    render(
+      <div ref={result.current.ref} style={{ width: '100px' }}>
+        Long text that should truncate
+      </div>,
+    )
+    expect(result.current.isTruncated).toBe(true)
+  })
+
+  it('ignores non-truncated content', () => {
+    const { result } = renderHook(() => useDetectedTruncation())
+    render(
+      <div ref={result.current.ref} style={{ width: '500px' }}>
+        Short text
+      </div>,
+    )
+    expect(result.current.isTruncated).toBe(false)
+  })
+})
+```
+
+## Going forward
+
+To make it even more sexy we could consider adding the following features:
+
+<table border='1' cellspacing='0' cellpadding='5'>
+  <thead>
+    <tr>
+      <th>Feature</th> <th>Implementation</th> <th>Benefit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Multi-line support</td> <td>`scrollHeight > clientHeight` check</td>
+      <td>Works with line-clamp truncation</td>
+    </tr>
+    <tr>
+      <td>Content mutation tracking</td> <td>MutationObserver</td>
+      <td>Detects dynamic content changes</td>
+    </tr>
+    <tr>
+      <td>Custom overflow check</td> <td>Accept comparison function prop</td>
+      <td>Flexible truncation logic</td>
+    </tr>
+  </tbody>
+</table>
+
+# Conclusion
+
+The `useDetectedTruncation` hook provides a clean, reusable solution for a common UI challenge. By encapsulating the detection logic, we can:
+
+- Create more accessible interfaces
+- Build smarter components
+- Reduce unnecessary tooltip clutter
+- Make our UIs more responsive to content changes
