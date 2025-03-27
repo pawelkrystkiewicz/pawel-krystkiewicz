@@ -1,0 +1,92 @@
+---
+title: 'Managing Functional Code Plugins in React Using Lifecycle and useEffect Cleanup'
+publishedAt: '2022-11-08'
+summary: 'Learn how to manage functional code plugins in React using lifecycle and useEffect cleanup. A detailed explanation of the code and best practices for managing third-party plugins.'
+---
+
+When working with React, integrating third-party plugins efficiently is essential to maintaining performance and ensuring proper cleanup when components unmount. In this article, I will explore how to manage functional code plugins as React components, leveraging React's lifecycle methods and the `useEffect` hook with cleanup functions.
+
+As an example let's use the Marker.io plugin as I already worked with it in the past.
+
+## Understanding the Marker.io Plugin Integration
+
+[Marker.io](https://marker.io) is a powerful feedback and bug reporting tool that can be embedded into applications. It provides a SDK for managing the widget instance.
+
+As it is an imperative code, it is not possible to use it directly in React.
+To make it work, I think it would be best to wrap it inside it's own React component and control it via `useEffect` hook.
+
+### Code Breakdown
+
+```javascript
+import markerSDK from '@marker.io/browser'
+import { useEffect, useState } from 'react'
+
+const WHITELIST = ['env05', 'env21', 'env38']
+
+const MarkerIOPlugin = () => {
+  // prepare to store widget instance
+  const [widget, setWidget] = useState(null)
+
+  if (!['env05', 'env21', 'env38'].includes(process.env.ENVIRONMENT)) {
+    return null
+  }
+
+  const startWidget = async destination => {
+    const loadedWidget = await markerSDK.loadWidget({ destination })
+    setWidget(loadedWidget)
+  }
+
+  // start widget on component mount
+  useEffect(() => {
+    if (process.env.API_KEY) {
+      startWidget(process.env.API_KEY)
+    }
+
+    // cleanup widget on component unmount
+    return () => widget?.unload?.()
+  }, [])
+
+  return null
+}
+```
+
+### Key Concepts in the Implementation
+
+1. **Environment-Based Initialization**
+
+   - The `WHITELIST` array ensures that the Marker.io widget is only loaded in certain environments. If the current environment is not whitelisted, the component returns `null`, preventing unnecessary execution.
+
+2. **Loading the Widget Asynchronously**
+
+   - The `startWidget` function initializes the Marker.io widget using an API key (`API_KEY`). The function is marked `async` because `markerSDK.loadWidget()` returns a promise.
+
+3. **Using `useEffect` for Side Effects**
+
+   - The `useEffect` hook is used to trigger the widget initialization when the component mounts.
+   - The empty dependency array (`[]`) ensures this effect runs only once, similar to `componentDidMount` in class-based components.
+
+4. **Proper Cleanup with `useEffect` Return Function**
+   - The cleanup function inside `useEffect` is crucial for preventing memory leaks and ensuring that the widget is properly unloaded when the component unmounts.
+   - `widget?.unload?.()` ensures that if the widget has been initialized, it is properly disposed of when the component is removed from the DOM.
+
+## Best Practices for Managing Functional Code Plugins in React
+
+### 1. **Control Initialization with Environment Variables**
+
+Always check the environment to ensure that the plugin is only loaded where needed. This prevents unnecessary API calls in production or local development.
+
+### 2. **Use Asynchronous Loading**
+
+Since many third-party SDKs load asynchronously, wrapping the initialization in an `async` function (like `startWidget`) ensures that the process does not block rendering.
+
+### 3. **Ensure Proper Cleanup**
+
+Many third-party plugins inject scripts, listeners, or DOM elements that persist beyond the component lifecycle. Using a cleanup function inside `useEffect` ensures proper teardown and prevents memory leaks.
+
+### 4. **Guard Against Undefined References**
+
+Using optional chaining (`widget?.unload?.()`) ensures that `unload` is only called if `widget` is defined, preventing runtime errors.
+
+## Conclusion
+
+By leveraging React's `useEffect` and its cleanup function, I can efficiently manage third-party plugins as functional components. This approach ensures proper initialization, cleanup, and adherence to best practices for maintaining performance and stability in React applications. Whether integrating Marker.io or any other external plugin, following these principles will help maintain a well-structured and maintainable codebase.
