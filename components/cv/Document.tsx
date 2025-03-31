@@ -120,18 +120,23 @@ export const Document = () => {
         >
           <div className='flex flex-col gap-2 text-pretty'>
             <Paragraph>
-              Excellent knowledge of JavaScript and TypeScript (ES6+, OOP, FP)
+              Experienced in JavaScript (ES6+), TypeScript, and React, with deep
+              knowledge of state management (Redux, Zustand), testing (Jest,
+              Cypress, Playwright), and modern build tools (Webpack, Vite).
             </Paragraph>
             <Paragraph>
-              Very good understanding of HTML and CSS (RWD, Mobile First, BEM,
-              SASS, JSS, Styled Components, TailwindCSS)
+              Strong understanding of frontend architecture, design patterns,
+              and CI/CD, with a focus on writing clean, maintainable code
+              following SOLID principles. End-to-end testing ownership.
             </Paragraph>
             <Paragraph>
-              Proficiency in React and integrating frontend with REST and
-              GraphQL APIs
+              Proven ability to collaborate effectively with designers and
+              backend teams in Agile environments.
             </Paragraph>
             <Paragraph>
-              Experience with TDD and Agile/Scrum methodology
+              Passionate about design systems, and modern frontend technologies
+              with experience around cloud services (Vercel, Google Cloud, AWS,
+              Coolify, Railway).
             </Paragraph>
           </div>
         </Section>
