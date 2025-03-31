@@ -7,7 +7,7 @@ export default [
     entries: [
       {
         description:
-          "Initiated and led the development of Contract Builder app. Today, it drives the <b>majority</b> of company's revenue and has been adopted by leading insurers in the UK and US. Each client contract is valued at <b>several million GBP annually</b>.",
+          "Initiated and pioneered the development of Contract Builder app. Today, it drives the <b>majority</b> of company's revenue and has been adopted by leading insurers in the UK and US. Each client contract is valued at <b>several million GBP annually</b>.",
       },
       {
         description:
