@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     printBackground: true,
     displayHeaderFooter: false,
     preferCSSPageSize: true,
-    pageRanges: '1',
+    // pageRanges: '2',
   })
 
   await browser.close()

@@ -16,4 +16,5 @@ export type Experience = {
   stack?: string[]
   industry?: string
   link?: string
+  responsibilities?: string[]
 }

@@ -59,6 +59,13 @@ export const ExperienceEntry: FC<ExperienceEntryProps> = ({
           </p>
         </div>
       </div>
+      <ul className='mt-2 list-disc text-pretty ml-4 text-sm'>
+        {exp.responsibilities?.map(responsibility => (
+          <li key={responsibility} className='text-text-secondary text-pretty'>
+            {responsibility}
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }
