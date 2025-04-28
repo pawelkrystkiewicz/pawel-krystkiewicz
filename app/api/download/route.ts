@@ -47,7 +47,7 @@ export async function POST(req: Request) {
       bottom: '10px',
       left: '10px',
     },
-    pageRanges: '2',
+    pageRanges: '1-2',
   })
 
   await browser.close()
