@@ -1,4 +1,3 @@
-import { getBaseUrl } from '@/app/utils/get-base-url'
 import puppeteerCore from 'puppeteer-core'
 import puppeteer from 'puppeteer'
 import chromium from '@sparticuz/chromium'
@@ -42,7 +41,13 @@ export async function POST(req: Request) {
     printBackground: true,
     displayHeaderFooter: false,
     preferCSSPageSize: true,
-    // pageRanges: '2',
+    margin: {
+      top: '10px',
+      right: '10px',
+      bottom: '10px',
+      left: '10px',
+    },
+    pageRanges: '2',
   })
 
   await browser.close()

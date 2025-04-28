@@ -13,7 +13,7 @@ const { name, email, linkedin, github, phone } = config
 
 const DEBUG = false
 const GAPS = 'gap-y-6 gap-x-10'
-const SIDEBAR_WIDTH = 'min-w-[30%] w-[30%]'
+const SIDEBAR_WIDTH = 'md:min-w-[30%] md:w-[30%] w-full'
 
 export const Document = () => {
   return (
@@ -58,7 +58,14 @@ export const Document = () => {
               target='_blank'
               className='whitespace-nowrap flex items-center gap-1'
             >
-              <Icons.Email /> {email}
+              <Icons.Email className='flex-shrink-0' /> {email}
+            </Link>
+            <Link
+              href={github}
+              target='_blank'
+              className='link-discrete flex items-center'
+            >
+              <Icons.Github /> @{github.split('/').pop()}
             </Link>
             <Link
               href={linkedin}
@@ -69,7 +76,7 @@ export const Document = () => {
             </Link>
           </div>
         </header>
-        <div className={clsx('flex gap-10', GAPS)}>
+        <div className={clsx('flex flex-col md:flex-row gap-10', GAPS)}>
           <div className={clsx('flex flex-col', SIDEBAR_WIDTH, GAPS)}>
             <Section title='about' className=''>
               <div className='flex flex-col gap-2'>
@@ -93,7 +100,7 @@ export const Document = () => {
                 )}
               </div>
             </Section>
-            <Section title='skills'>
+            <Section title='skills' className='hidden md:flex'>
               <div className='flex flex-col gap-1 text-pretty'>
                 {skills.map(entry => (
                   <SplittedContent key={entry} content={entry} />
@@ -101,7 +108,7 @@ export const Document = () => {
               </div>
             </Section>
 
-            <Section title='personality'>
+            <Section title='personality' className='hidden md:flex'>
               <div className='flex flex-col gap-1 text-pretty'>
                 {personality.map(entry => (
                   <SplittedContent key={entry} content={entry} />
@@ -128,6 +135,21 @@ export const Document = () => {
                 ))}
               </div>
             </Section>
+            <Section title='skills' className='md:hidden'>
+              <div className='flex flex-col gap-1 text-pretty'>
+                {skills.map(entry => (
+                  <SplittedContent key={entry} content={entry} />
+                ))}
+              </div>
+            </Section>
+
+            <Section title='personality' className='md:hidden'>
+              <div className='flex flex-col gap-1 text-pretty'>
+                {personality.map(entry => (
+                  <SplittedContent key={entry} content={entry} />
+                ))}
+              </div>
+            </Section>
             <Section title='languages'>
               <div className='flex gap-2'>
                 <div className='font-semibold'>English</div>
@@ -143,25 +165,9 @@ export const Document = () => {
 
         <footer className='text-sm text-text-secondary'>
           <Divider className='block mb-1' />
-          <div className='flex justify-between sm:flex-row flex-col gap-2'>
-            <Link
-              href={linkedin}
-              target='_blank'
-              className='whitespace-nowrap items-center hidden md:flex'
-            >
-              <Icons.LinkedIn /> @{linkedin.split('/').pop()}
-            </Link>
-            <p className='hidden md:block'>
-              {name} @ {new Date().getFullYear()}
-            </p>
-            <Link
-              href={github}
-              target='_blank'
-              className='link-discrete flex items-center'
-            >
-              <Icons.Github /> @{github.split('/').pop()}
-            </Link>
-          </div>
+          <Paragraph className='text-center text-xs'>
+            {name} @ {new Date().getFullYear()}
+          </Paragraph>
         </footer>
       </div>
     </>
