@@ -111,7 +111,7 @@ export default [
     responsibilities: [
       'Built a comprehensive technical database cataloging all product components (caps, jars, labels, packaging) to support manufacturing and production planning.',
       'Designed and maintained the database in MS Access, ensuring it was easily accessible and scalable for engineering teams.',
-      'Suppoerted regular expansion of the database to include tooling parts essential for different product lines.',
+      'Supported regular expansion of the database to include tooling parts essential for different product lines.',
       'Collaborated closely with manufacturing engineers, providing analytical support for production optimization.',
     ],
   },
