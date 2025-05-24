@@ -50,6 +50,7 @@ export const Document = () => {
               href={`tel:${phone}`}
               target='_blank'
               className='whitespace-nowrap flex items-center gap-1'
+              data-umami-event='click-phone'
             >
               <Icons.Phone /> {phone}
             </Link>
@@ -57,6 +58,7 @@ export const Document = () => {
               href={`mailto:${email}`}
               target='_blank'
               className='whitespace-nowrap flex items-center gap-1'
+              data-umami-event='click-email'
             >
               <Icons.Email className='flex-shrink-0' /> {email}
             </Link>
@@ -64,6 +66,7 @@ export const Document = () => {
               href={github}
               target='_blank'
               className='link-discrete flex items-center'
+              data-umami-event='click-github'
             >
               <Icons.Github /> @{github.split('/').pop()}
             </Link>
@@ -71,6 +74,7 @@ export const Document = () => {
               href={linkedin}
               target='_blank'
               className='whitespace-nowrap flex items-center gap-1'
+              data-umami-event='click-linkedin'
             >
               <Icons.LinkedIn /> LinkedIn
             </Link>
@@ -91,6 +95,7 @@ export const Document = () => {
                         href={'https://www.creation-ui.com'}
                         target='_blank'
                         className='link-discrete not-[print]:underline'
+                        data-umami-event='click-creation-ui'
                       >
                         Creation UI
                       </Link>{' '}

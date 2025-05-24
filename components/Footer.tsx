@@ -39,6 +39,8 @@ export default function Footer() {
               target='_blank'
               href={href}
               title={text}
+              data-umami-event={`click-${text.replace(' ', '-')}`}
+              data-umami-item={href}
             >
               <Icon />
               <span className='sm:hidden block'>{text}</span>

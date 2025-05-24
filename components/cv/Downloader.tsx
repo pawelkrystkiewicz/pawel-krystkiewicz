@@ -24,6 +24,7 @@ export const Downloader = ({ filename, pagePath }: DownloaderProps) => {
       className='text-primary cursor-pointer  hover:text-primary/80 flex items-center gap-1'
       onClick={handleExport.bind(null)}
       disabled={isLoading}
+      data-umami-event='download-cv'
     >
       <Icons.Download /> Download {isLoading && <Loader />}
     </button>

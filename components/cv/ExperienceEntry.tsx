@@ -37,6 +37,8 @@ export const ExperienceEntry: FC<ExperienceEntryProps> = ({
                 target='_blank'
                 className='link-descrete micro-interactions text-base font-medium'
                 title='Company website'
+                data-umami-event='click-company-website'
+                data-umami-item={exp.link}
               >
                 {exp.company}
               </Link>

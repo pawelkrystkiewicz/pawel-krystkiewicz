@@ -73,6 +73,13 @@ export default async function RootLayout({
 
   return (
     <html lang='en' className={clsx(manrope.variable, firaCode.variable)}>
+      <head>
+        <script
+          defer
+          src={config.analytics.scriptUrl}
+          data-website-id={config.analytics.websiteId}
+        />
+      </head>
       <body className='antialiased mx-4 mt-8 lg:mx-auto max-w-[210mm]'>
         <main className='flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0'>
           <Navbar />

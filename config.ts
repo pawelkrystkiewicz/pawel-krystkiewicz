@@ -14,6 +14,11 @@ const config = {
     cui: true,
     articles: true,
   },
+  analytics: {
+    provider: 'umami',
+    websiteId: process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID,
+    scriptUrl: process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL,
+  },
   startDate: START_DATE,
   totalExperience:
     new Date().getFullYear() - new Date(START_DATE).getFullYear(),

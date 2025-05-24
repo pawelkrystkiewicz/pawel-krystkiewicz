@@ -29,6 +29,7 @@ export default function Page() {
                 href='https://www.creation-ui.com'
                 target='_blank'
                 className='link'
+                data-umami-event='click-creation-ui'
               >
                 Creation UI
               </Link>{' '}
