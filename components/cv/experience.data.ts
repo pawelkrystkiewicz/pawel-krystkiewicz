@@ -26,8 +26,8 @@ export default [
     company: 'Chronos',
     industry: 'wfm',
     role: 'Product Engineer',
-    start: { month: 12, year: 2021 },
-    end: { month: 3, year: 2022 },
+    start: { month: 11, year: 2021 },
+    end: { month: 4, year: 2022 },
     location: 'PL',
     stack: ['React', 'TypeScript', 'MUI', 'Google Cloud Platform', 'Node.js'],
     responsibilities: [
