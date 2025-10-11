@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { FC, useMemo } from 'react'
 import { Downloader } from './cv/Downloader'
 import clsx from 'clsx'
+import { Tooltip } from '@creation-ui/react'
 
 export interface NavigationItemProps {
   path: string
@@ -32,7 +33,9 @@ export const NavigationItem: FC<NavigationItemProps> = ({
         {name}
       </Link>
       {downloadFilename && isActive && (
-        <Downloader filename={downloadFilename} pagePath={path} />
+        <Tooltip content='Generate PDF version of my CV 🎉' position='right'>
+          <Downloader filename={downloadFilename} pagePath={path} />
+        </Tooltip>
       )}
     </div>
   )
