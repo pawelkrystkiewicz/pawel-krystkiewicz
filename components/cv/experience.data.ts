@@ -2,10 +2,35 @@ import { Experience } from '@/app/types'
 
 export default [
   {
+    id: 6,
+    company: 'Chunk Creations',
+    industry: 'software',
+    role: 'Freelance Software Engineer',
+    start: { month: 2, year: 2025 },
+    location: 'Poznan, PL',
+    stack: [
+      'React',
+      'TypeScript',
+      'TailwindCSS',
+      'AWS',
+      'Figma',
+      'Vite',
+      'Next.js',
+    ],
+    link: 'https://chunk-creations.com',
+    responsibilities: [
+      'Providing state-of-the-art frontend consulting and development services for international clients.',
+      'Delivering production-grade web applications using React, TypeScript, and AWS, with a focus on performance, scalability, and clean architecture.',
+      'Collaborating with product teams and designers to build modern UI systems and streamline handoff workflows in Figma.',
+      'Supporting early-stage startups and established teams in codebase modernization, tooling setup, and process automation.',
+      'Designing component libraries, establishing design systems, and introducing modern frontend patterns to improve developer velocity.',
+    ],
+  },
+  {
     id: 5,
     company: 'Artificial Labs',
     industry: 'insurtech',
-    role: 'Frontend Engineer',
+    role: 'Senior Frontend Engineer',
     start: { month: 3, year: 2022 },
     end: { month: 3, year: 2025 },
     location: 'London, UK',
