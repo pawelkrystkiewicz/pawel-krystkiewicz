@@ -1,0 +1,369 @@
+---
+title: 'Framer Motion: Animating Height Transitions in React'
+publishedAt: '2024-02-10'
+summary: 'How to create smooth height animations for collapsible content using Framer Motion and dynamic duration calculations based on content size.'
+---
+
+# The Height Animation Problem
+
+Animating height transitions is notoriously tricky in CSS. Unlike opacity or transforms, you can't simply transition from `height: 0` to `height: auto`. The browser needs concrete values to interpolate between:
+
+```css
+/* This doesn't work */
+.collapsible {
+  height: 0;
+  transition: height 0.3s;
+}
+.collapsible.open {
+  height: auto; /* Can't animate to 'auto' */
+}
+```
+
+Common workarounds involve JavaScript to calculate heights, `max-height` hacks that create awkward timing, or fixed heights that break with dynamic content. None of these are ideal.
+
+For expandable sections, accordions, dropdowns, or any collapsible UI, we need smooth height transitions that work with dynamic content of any size.
+
+## Solution
+
+Framer Motion combined with the `react-use` library's `useMeasure` hook gives us a clean solution. We measure the content's actual height and animate to that specific value, with smart duration scaling based on content size.
+
+```tsx
+import type { FC, ReactNode } from 'react'
+import { useMeasure } from 'react-use'
+import { motion } from 'framer-motion'
+
+interface AnimateHeightProps {
+  isVisible: boolean
+  ease?: string
+  duration?: number
+  className?: string
+  variants?: {
+    open: object
+    collapsed: object
+  }
+  children: ReactNode
+}
+
+export const AnimateHeight: FC<AnimateHeightProps> = ({
+  duration,
+  ease,
+  variants,
+  isVisible,
+  children,
+  ...other
+}) => {
+  const [ref, { height }] = useMeasure<HTMLDivElement>()
+
+  return (
+    <motion.div
+      className='overflow-hidden'
+      initial={isVisible ? 'open' : 'collapsed'}
+      animate={isVisible ? 'open' : 'collapsed'}
+      inherit={false}
+      variants={variants}
+      transition={{
+        ease,
+        duration:
+          typeof duration === 'number'
+            ? duration
+            : getAutoHeightDuration(height) / 1000,
+      }}
+      {...other}
+    >
+      <div ref={ref}>{children}</div>
+    </motion.div>
+  )
+}
+
+/**
+ * Get the duration of the animation depending upon
+ * the height provided.
+ * @param {number} height of container
+ */
+const getAutoHeightDuration = (height: number) => {
+  if (!height) return 0
+  const constant = height / 36
+  return Math.round((4 + 15 * constant ** 0.25 + constant / 5) * 10)
+}
+
+AnimateHeight.defaultProps = {
+  ease: 'easeInOut',
+  variants: {
+    open: {
+      opacity: 1,
+      height: 'auto',
+    },
+    collapsed: { opacity: 0, height: 0 },
+  },
+}
+```
+
+## How It Works
+
+**useMeasure Hook**: Tracks the actual rendered height of the content in real-time. When content changes, the height updates automatically.
+
+**Motion Variants**: Define two states:
+
+- `open` - Full height with opacity 1
+- `collapsed` - Zero height with opacity 0
+
+**Dynamic Duration**: The `getAutoHeightDuration` function calculates animation timing based on content height. Taller content gets longer animations, preventing jarring fast transitions for large sections.
+
+**`overflow-hidden`**: Critical for the effect - hides content as the container shrinks to zero height.
+
+**`inherit=false`**: Prevents inheriting animation variants from parent motion components, keeping this animation independent.
+
+## The Duration Formula
+
+The `getAutoHeightDuration` function deserves attention:
+
+```tsx
+const getAutoHeightDuration = (height: number) => {
+  if (!height) return 0
+  const constant = height / 36
+  return Math.round((4 + 15 * constant ** 0.25 + constant / 5) * 10)
+}
+```
+
+This formula creates a non-linear relationship between height and duration:
+
+- Small heights (50px): ~150ms
+- Medium heights (200px): ~250ms
+- Large heights (500px): ~400ms
+- Extra large (1000px): ~550ms
+
+### Breaking Down the Math
+
+Let's dissect that return statement: `Math.round((4 + 15 * constant ** 0.25 + constant / 5) * 10)`
+
+**Step 1: Normalize the height**
+
+```tsx
+const constant = height / 36
+```
+
+This converts pixels to a normalized scale. For example, 360px becomes 10, making the math more manageable.
+**This is totally arbitrary, pick what works best for your use case.**
+
+**Step 2: Three components create the curve**
+
+The formula has three parts that add together:
+
+1. **Base duration**: `4`
+
+   - Ensures even tiny elements get at least 40ms (after × 10)
+
+2. **Diminishing growth**: `15 * constant ** 0.25`
+
+   - The `** 0.25` is a fourth root, creating sublinear growth
+   - This is the key: doubling height doesn't double duration
+   - Prevents massive elements from having sluggish animations
+
+3. **Linear component**: `constant / 5`
+   - Adds some proportional scaling
+   - Balances out the diminishing returns from component 2
+
+**Step 3: Scale to milliseconds**
+
+```tsx
+Math.round((...) * 10)
+```
+
+Multiply by 10 to convert to milliseconds and round for clean values.
+
+### Why This Curve?
+
+The fourth root (`** 0.25`) is the secret sauce. Compare linear vs fourth-root scaling:
+
+<table>
+  <thead>
+    <tr>
+      <th>Height</th>
+      <th>Linear (height/2)</th>
+      <th>Fourth Root (formula)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>100px</td>
+      <td>50ms</td>
+      <td>~170ms</td>
+    </tr>
+    <tr>
+      <td>400px</td>
+      <td>200ms</td>
+      <td>~310ms</td>
+    </tr>
+    <tr>
+      <td>1600px</td>
+      <td>800ms</td>
+      <td>~560ms</td>
+    </tr>
+  </tbody>
+</table>
+
+Without the fourth root, large collapsible sections would take almost a second to animate, feeling slow and unresponsive. The formula keeps animations snappy regardless of content size while still giving taller content enough time to feel smooth.
+For extra crispy effect you could clamp this value to keep it between desired range.
+
+```ts
+Math.max(Math.min(calculated, 40, 350))
+```
+
+At the end of day, you can override this by passing a fixed `duration` prop when you need consistent timing across all heights.
+
+## Practical Usage
+
+**Simple accordion**:
+
+```tsx
+const Accordion = ({ title, content }) => {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <div>
+      <button onClick={() => setIsOpen(!isOpen)}>{title}</button>
+      <AnimateHeight isVisible={isOpen}>
+        <div className='p-4'>{content}</div>
+      </AnimateHeight>
+    </div>
+  )
+}
+```
+
+**Custom animation variants**:
+
+```tsx
+<AnimateHeight
+  isVisible={showDetails}
+  variants={{
+    open: {
+      opacity: 1,
+      height: 'auto',
+      transition: { staggerChildren: 0.05 },
+    },
+    collapsed: {
+      opacity: 0,
+      height: 0,
+    },
+  }}
+>
+  <DetailsList />
+</AnimateHeight>
+```
+
+**Fixed duration for consistent timing**:
+
+```tsx
+<AnimateHeight isVisible={expanded} duration={0.2} ease='easeOut'>
+  {children}
+</AnimateHeight>
+```
+
+## Why This Approach Works
+
+**Automatic measurement**: No manual height calculations needed. The component adapts to content changes automatically.
+
+**Smooth animations**: Unlike `max-height` hacks, the animation duration matches the actual height transition.
+
+**Flexible**: Override defaults when needed while keeping sensible behavior out of the box.
+
+**Dynamic content friendly**: If content height changes while open, the animation adjusts seamlessly.
+
+## Performance Considerations
+
+While this approach is generally performant, be aware:
+
+**Height animations trigger layout recalculation**: Unlike transforms, animating height is not GPU-accelerated. For numerous simultaneous animations, this can impact performance.
+
+**Measurement overhead**: `useMeasure` uses ResizeObserver, which is efficient but adds overhead. For hundreds of collapsible items, consider virtualization.
+
+**Alternative for performance-critical cases**: If you need many height animations, consider animating `scaleY` transform instead:
+
+```tsx
+// More performant but content gets squished
+<motion.div
+  style={{ transformOrigin: 'top' }}
+  animate={{ scaleY: isOpen ? 1 : 0 }}
+/>
+```
+
+The tradeoff is that `scaleY` squishes content during animation, while height animations maintain readable content throughout.
+
+## Comparison with AnimatePresence
+
+This component differs from the [AnimateAppearance](/articles/posts/react-animations) pattern:
+
+<table border='1' cellspacing='0' cellpadding='5'>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>AnimateHeight</th>
+      <th>AnimatePresence</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Use case</td>
+      <td>Expanding/collapsing sections</td>
+      <td>Mounting/unmounting components</td>
+    </tr>
+    <tr>
+      <td>Content in DOM</td>
+      <td>Always present, just hidden</td>
+      <td>Removed from DOM when hidden</td>
+    </tr>
+    <tr>
+      <td>Animation type</td>
+      <td>Height + opacity</td>
+      <td>Position/scale + opacity</td>
+    </tr>
+    <tr>
+      <td>Performance</td>
+      <td>Layout recalc on animation</td>
+      <td>GPU-accelerated transforms</td>
+    </tr>
+  </tbody>
+</table>
+
+Use `AnimateHeight` when content should remain in the DOM (for SEO, form state, etc.) and you want vertical expand/collapse. Use `AnimatePresence` when components are truly conditional and should be unmounted.
+
+## Common Use Cases
+
+**FAQ accordions**:
+
+```tsx
+{
+  faqs.map(faq => (
+    <AnimateHeight key={faq.id} isVisible={openId === faq.id}>
+      <Answer>{faq.answer}</Answer>
+    </AnimateHeight>
+  ))
+}
+```
+
+**Filter panels**:
+
+```tsx
+<AnimateHeight isVisible={showFilters}>
+  <FilterGroup />
+</AnimateHeight>
+```
+
+**Form sections**:
+
+```tsx
+<AnimateHeight isVisible={paymentMethod === 'card'}>
+  <CreditCardFields />
+</AnimateHeight>
+```
+
+## Conclusion
+
+The `AnimateHeight` component solves one of CSS's most annoying limitations by combining Framer Motion's animation capabilities with real-time height measurement. By automating the measurement and providing smart duration scaling, we get:
+
+- Smooth height transitions without CSS hacks
+- Automatic adaptation to dynamic content
+- Customizable timing when needed
+- Clean, reusable animation logic
+
+Next time you need a collapsible section, skip the CSS gymnastics and reach for this component. Your users will appreciate the smooth, professional transitions.
