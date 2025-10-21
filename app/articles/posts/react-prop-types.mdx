@@ -1,5 +1,5 @@
 ---
-title: 'TS/React: #01 - Where are my prop types?!'
+title: 'TS/React #01: Where are my prop types?!'
 publishedAt: '2022-09-22'
 summary: "You got yourself a nice third-party component, but there's a catch: it doesn't export its prop types. What now?"
 ---
@@ -53,6 +53,8 @@ interface MyProps {
 
   // Even works with generic HTML elements
   divProps?: React.ComponentProps<'div'>
+  // But don't use that, there is better way to get HTML attributes
+  divProperProps?: React.HTMLAttributes<HTMLDivElement>
 }
 ```
 
@@ -98,40 +100,6 @@ export const AnimatedCard = ({
   Content here
 </AnimatedCard>
 ```
-
-## Alternative Approaches
-
-There are other ways to extract types, each with tradeoffs:
-<table>
-  <thead>
-    <tr>
-      <th>Approach</th>
-      <th>Code</th>
-      <th>Pros</th>
-      <th>Cons</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>ComponentProps</td>
-      <td><code>React.ComponentProps&lt;typeof Comp&gt;</code></td>
-      <td>Clean, widely supported</td>
-      <td>None really</td>
-    </tr>
-    <tr>
-      <td>Parameters utility</td>
-      <td><code>Parameters&lt;typeof Comp&gt;[0]</code></td>
-      <td>Works with function components</td>
-      <td>Verbose, less semantic</td>
-    </tr>
-    <tr>
-      <td>JSX.IntrinsicElements</td>
-      <td><code>JSX.IntrinsicElements['div']</code></td>
-      <td>Good for HTML elements</td>
-      <td>Only works with intrinsic elements</td>
-    </tr>
-  </tbody>
-</table>
 
 ## Edge Cases to Consider
 
