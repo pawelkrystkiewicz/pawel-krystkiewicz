@@ -1,0 +1,192 @@
+---
+title: 'TS/React: #01 - Where are my prop types?!'
+publishedAt: '2022-09-22'
+summary: "You got yourself a nice third-party component, but there's a catch: it doesn't export its prop types. What now?"
+---
+
+## The Type Extraction Problem
+
+When working with third-party libraries, you often want to pass props from your component down to a library component. But what if the library doesn't export its prop types? Say you are working with Framer Motion and you want to pass props to the `motion.div` component.
+
+```tsx
+// You want to do this:
+interface MyComponentProps {
+  animationProps?: MotionDivProps // But this type isn't exported!
+}
+```
+
+This can happen either by being a standard (Framer Motion) or just a mistake with current release of any library exposing components.
+
+The naive solution? Copy-paste the types from the library's source code or the docs. But this is brittle, error-prone, and breaks when the library updates. How to do it like a pro?
+
+## Solution
+
+TypeScript provides a built-in utility type that extracts component props: `React.ComponentProps<T>` with usage like so:
+
+```tsx
+interface AnimatePresenceProps {
+  animationProps?: React.ComponentProps<typeof motion.div>
+}
+```
+
+That's it. Clean, type-safe, and automatically stays in sync with the library. You can use it with any component you want.
+
+## How It Works
+
+The magic happens in two steps:
+
+1. `typeof motion.div` gets the actual type of the component (not an instance, but the component itself)
+2. `React.ComponentProps<...>` extracts all props that component accepts
+
+This pattern works with any React component:
+
+```tsx
+import { motion } from 'framer-motion'
+import { Button } from '@some-ui-library'
+
+interface MyProps {
+  // Extract props from motion.div
+  motionProps?: React.ComponentProps<typeof motion.div>
+
+  // Extract props from any component
+  buttonProps?: React.ComponentProps<typeof Button>
+
+  // Even works with generic HTML elements
+  divProps?: React.ComponentProps<'div'>
+}
+```
+
+## Practical Usage
+
+Here's a real-world example with Framer Motion:
+
+```tsx
+import { motion } from 'framer-motion'
+
+interface AnimatedCardProps {
+  title: string
+  children: React.ReactNode
+  animationProps?: React.ComponentProps<typeof motion.div>
+}
+
+export const AnimatedCard = ({
+  title,
+  children,
+  animationProps,
+}: AnimatedCardProps) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      {...animationProps}
+    >
+      <h2>{title}</h2>
+      {children}
+    </motion.div>
+  )
+}
+
+// Usage - full type safety!
+;<AnimatedCard
+  title='Hello'
+  animationProps={{
+    transition: { duration: 0.5 },
+    whileHover: { scale: 1.05 },
+    exit: { opacity: 0 }, // TypeScript knows all valid motion.div props
+  }}
+>
+  Content here
+</AnimatedCard>
+```
+
+## Alternative Approaches
+
+There are other ways to extract types, each with tradeoffs:
+<table>
+  <thead>
+    <tr>
+      <th>Approach</th>
+      <th>Code</th>
+      <th>Pros</th>
+      <th>Cons</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ComponentProps</td>
+      <td><code>React.ComponentProps&lt;typeof Comp&gt;</code></td>
+      <td>Clean, widely supported</td>
+      <td>None really</td>
+    </tr>
+    <tr>
+      <td>Parameters utility</td>
+      <td><code>Parameters&lt;typeof Comp&gt;[0]</code></td>
+      <td>Works with function components</td>
+      <td>Verbose, less semantic</td>
+    </tr>
+    <tr>
+      <td>JSX.IntrinsicElements</td>
+      <td><code>JSX.IntrinsicElements['div']</code></td>
+      <td>Good for HTML elements</td>
+      <td>Only works with intrinsic elements</td>
+    </tr>
+  </tbody>
+</table>
+
+## Edge Cases to Consider
+
+**Generic Components:**
+If the component is generic, you might need to provide type arguments:
+
+```tsx
+interface Props {
+  selectProps?: React.ComponentProps<typeof Select<string>>
+}
+```
+
+**Ref forwarding:**
+`ComponentProps` includes ref types, which is usually what you want:
+
+```tsx
+// This includes the ref prop
+type MotionDivProps = React.ComponentProps<typeof motion.div>
+```
+
+**Excluding specific props:**
+Sometimes you want to exclude certain props:
+
+```tsx
+interface Props {
+  animationProps?: Omit<
+    React.ComponentProps<typeof motion.div>,
+    'children' | 'ref'
+  >
+}
+```
+
+## Going Forward
+
+To make this pattern even more powerful, consider:
+
+- **Partial application**: Use `Partial<React.ComponentProps<...>>` to make all props optional
+- **Required props**: Use `Required<Pick<...>>` to enforce specific props
+- **Discriminated unions**: Combine with unions for conditional prop spreading
+- **Generic wrappers**: Create reusable type helpers for common patterns
+
+```tsx
+type PartialProps<T> = Partial<React.ComponentProps<T>>
+type RequiredProps<T, K extends keyof React.ComponentProps<T>> = Required<
+  Pick<React.ComponentProps<T>, K>
+>
+```
+
+## Conclusion
+
+The `React.ComponentProps` utility type solves a common TypeScript challenge elegantly. By extracting props from components directly, we can:
+
+- Maintain type safety without manual type definitions
+- Stay automatically in sync with library updates
+- Reduce boilerplate and maintenance burden
+- Make our component APIs more flexible and predictable
+
+Next time you're reaching for a third-party component's props, remember: you don't need the library to export types—TypeScript already has your back.
