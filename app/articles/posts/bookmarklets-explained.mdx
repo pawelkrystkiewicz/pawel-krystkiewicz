@@ -1,0 +1,299 @@
+---
+title: 'The Magic of Bookmarklets'
+publishedAt: '2023-08-15'
+summary: 'A deep dive into bookmarklets - how they work, why they work, and how to create your own JavaScript-powered browser shortcuts.'
+---
+
+# How Bookmarklets Work: Injecting Code into Any Webpage
+
+In the [previous article](/articles/posts/css-debug-outline), I showed you this mysterious one-liner:
+
+```javascript
+javascript:(function(){var s=document.createElement('style');s.innerHTML='*{background:#000!important;color:#0f0!important;outline:solid #f00 1px!important}';document.head.appendChild(s);})();
+```
+
+Save it as a bookmark, click it, and suddenly your page has debug outlines everywhere. But how does this actually work? And why does JavaScript code live in a bookmark?
+
+Let's break it down.
+
+## What is a Bookmarklet?
+
+A bookmarklet is executable JavaScript code stored as a browser bookmark. Instead of navigating to a URL, clicking the bookmark executes code on the current page.
+
+The secret is the `javascript:` protocol prefix. According to [MDN](https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Schemes/javascript), these are "fake navigation targets that execute JavaScript when the browser attempts to navigate."
+
+```javascript
+// Normal bookmark
+https://example.com
+
+// Bookmarklet
+javascript:alert('Hello from a bookmark!')
+```
+
+That's it. Any valid JavaScript after `javascript:` will run in the context of the current page.
+
+### How the Browser Processes javascript: URLs
+
+When you execute a `javascript:` URL, the browser:
+1. Parses and executes the script
+2. Evaluates its **completion value** (similar to `eval()`)
+3. If the completion value is a **string**, treats it as HTML and navigates to it
+4. If it's **not a string**, just executes the code without navigation
+
+This is why simple expressions can replace your page content, while IIFEs (which return `undefined`) don't.
+
+## Breaking Down the Debug Bookmarklet
+
+Let's dissect the CSS debug bookmarklet piece by piece:
+
+### 1. The Protocol Prefix
+
+```javascript
+javascript:
+```
+
+Tells the browser "execute this as JavaScript, don't navigate anywhere."
+
+### 2. The IIFE Wrapper
+
+```javascript
+(function(){
+  // code here
+})();
+```
+
+An Immediately Invoked Function Expression (IIFE). This pattern:
+- Keeps variables scoped (doesn't pollute the global namespace)
+- Executes immediately
+- Returns nothing (important - we don't want to navigate)
+
+Without the IIFE, any return value would replace the page content. Try this:
+
+```javascript
+javascript:'Hello'
+```
+
+Your page gets replaced with the text "Hello". The IIFE prevents this.
+
+### 3. Creating a Style Element
+
+```javascript
+var s = document.createElement('style');
+```
+
+Creates a new `<style>` element in memory. Not yet attached to the page.
+
+### 4. Adding CSS Rules
+
+```javascript
+s.innerHTML = '*{background:#000!important;color:#0f0!important;outline:solid #f00 1px!important}';
+```
+
+Sets the inner content of the `<style>` element to our CSS rules. This is the actual debug styling from the previous article.
+
+### 5. Injecting into the Page
+
+```javascript
+document.head.appendChild(s);
+```
+
+Appends the style element to `<head>`, making the CSS active immediately. The browser applies the styles and you see red outlines everywhere.
+
+## Why This Works
+
+Bookmarklets have access to the same DOM and JavaScript APIs as the page itself. They run in the same security context, meaning they can:
+
+- Access and modify the DOM
+- Create and inject elements
+- Read and modify variables
+- Call functions defined on the page
+- Access cookies and localStorage
+- Make network requests
+
+This makes them incredibly powerful for debugging, testing, and quick modifications.
+
+## The Full Flow
+
+```javascript
+javascript:              // 1. Tell browser to execute JS
+(function(){             // 2. Start IIFE (prevents return value issues)
+  var s = document.createElement('style');  // 3. Create style element
+  s.innerHTML = '*{...}';                   // 4. Add CSS rules
+  document.head.appendChild(s);             // 5. Inject into page
+})();                    // 6. Execute immediately
+```
+
+Click the bookmark → Browser executes → Style injected → Debug outlines appear.
+
+## Creating Your Own Bookmarklets
+
+Here are some interesting examples:
+
+### Remove All Images
+
+```javascript
+javascript:(function(){document.querySelectorAll('img').forEach(img=>img.remove());})();
+```
+
+### Outline All Links
+
+```javascript
+javascript:(function(){document.querySelectorAll('a').forEach(a=>a.style.outline='2px solid red');})();
+```
+
+### Edit Any Page
+
+```javascript
+javascript:document.body.contentEditable=true;
+```
+
+This one doesn't even need an IIFE since it doesn't return a value.
+
+### Extract All Links
+
+```javascript
+javascript:(function(){console.log([...document.querySelectorAll('a')].map(a=>a.href));})();
+```
+
+Logs all links to the console. Open DevTools to see the output.
+
+## Best Practices
+
+**1. Always use an IIFE**
+
+```javascript
+// Good
+javascript:(function(){ /* code */ })();
+
+// Bad - might replace page content
+javascript:someCode()
+```
+
+**2. Minify your code**
+
+Bookmarklets are stored as URLs. Keep them compact:
+
+```javascript
+// Before minification
+javascript:(function() {
+  var style = document.createElement('style');
+  style.innerHTML = '* { outline: 1px solid red }';
+  document.head.appendChild(style);
+})();
+
+// After minification
+javascript:(function(){var s=document.createElement('style');s.innerHTML='*{outline:1px solid red}';document.head.appendChild(s);})();
+```
+
+**3. Handle errors gracefully**
+
+```javascript
+javascript:(function(){
+  try {
+    // your code
+  } catch(e) {
+    alert('Error: ' + e.message);
+  }
+})();
+```
+
+**4. Use void operator for simple statements**
+
+MDN recommends using the `void` operator to prevent accidental navigation if a function returns a string:
+
+```javascript
+// Without void - might navigate if someFunction() returns a string
+javascript:someFunction()
+
+// With void - guarantees no navigation
+javascript:void someFunction()
+
+// Also works with inline expressions
+javascript:void(document.body.style.background='red')
+```
+
+The `void` operator evaluates the expression and returns `undefined`, ensuring the completion value is never a string.
+
+## Security Considerations
+
+Bookmarklets run with full access to the current page. This means:
+
+**Safe:**
+- Bookmarklets you write yourself
+- Bookmarklets from trusted sources that you've reviewed
+
+**Dangerous:**
+- Random bookmarklets from the internet
+- Bookmarklets you haven't inspected
+
+A malicious bookmarklet could:
+- Steal cookies and session tokens
+- Submit forms on your behalf
+- Send your data to external servers
+- Modify page behavior
+
+Always review bookmarklet code before adding it to your bookmarks. It's just JavaScript - read it first.
+
+### Content Security Policy (CSP)
+
+Some websites implement Content Security Policy headers that may block `javascript:` URLs from executing. If a site has a strict `script-src` directive, your bookmarklet might not work.
+
+This is actually a security feature protecting users from XSS attacks, but it can also prevent legitimate bookmarklets. Most sites don't block them, but enterprise apps and security-focused sites might.
+
+If your bookmarklet doesn't work on a particular site, check the browser console for CSP violations.
+
+## Browser Compatibility
+
+Bookmarklets work in all major browsers:
+- Chrome ✅
+- Firefox ✅
+- Safari ✅
+- Edge ✅
+
+Some mobile browsers restrict bookmarklets for security reasons, but desktop browsers fully support them.
+
+## Advanced: Multi-line Bookmarklets
+
+For complex bookmarklets, write readable code first, then minify:
+
+```javascript
+// Development version
+(function() {
+  const debug = {
+    outline: () => {
+      const style = document.createElement('style');
+      style.innerHTML = '* { outline: 1px solid red !important }';
+      document.head.appendChild(style);
+    },
+    grid: () => {
+      document.body.style.backgroundImage =
+        'linear-gradient(rgba(0,0,0,.05) 1px, transparent 1px)';
+      document.body.style.backgroundSize = '10px 10px';
+    }
+  };
+
+  const action = prompt('Choose: outline or grid');
+  if (debug[action]) debug[action]();
+})();
+
+// Minified for bookmark
+javascript:(function(){const debug={outline:()=>{const s=document.createElement('style');s.innerHTML='*{outline:1px solid red!important}';document.head.appendChild(s);},grid:()=>{document.body.style.backgroundImage='linear-gradient(rgba(0,0,0,.05) 1px, transparent 1px)';document.body.style.backgroundSize='10px 10px';}};const action=prompt('Choose: outline or grid');if(debug[action])debug[action]();})();
+```
+
+Use a JavaScript minifier or do it manually.
+
+## Conclusion
+
+Bookmarklets are a powerful, underrated browser feature. They're essentially JavaScript snippets you can run on any page with a single click.
+
+The debug outline bookmarklet from the previous article demonstrates the core concept: create an element, modify it, inject it into the DOM. But you can do so much more:
+
+- Automate repetitive tasks
+- Debug production sites
+- Test responsive designs
+- Extract data from pages
+- Modify behavior without browser extensions
+
+Next time you find yourself doing the same DevTools commands repeatedly, consider making a bookmarklet. It's JavaScript you already know, just packaged differently.
+
+And remember: always review bookmarklet code before using it. You're giving it full access to the current page.
