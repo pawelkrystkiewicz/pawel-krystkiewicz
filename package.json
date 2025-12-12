@@ -14,7 +14,7 @@
     "test:watch": "bun vitest --watch"
   },
   "dependencies": {
-    "@creation-ui/react": "^15.2.4",
+    "@creation-ui/react": "^16.0.0",
     "@sparticuz/chromium": "^133.0.0",
     "@upstash/redis": "^1.34.5",
     "@vercel/analytics": "^1.1.3",
