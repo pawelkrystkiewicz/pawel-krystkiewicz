@@ -38,7 +38,7 @@
     "@types/node": "20.11.17",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
-    "sugar-high": "^0.6.0",
+    "sugar-high": "^0.9.0",
     "tailwindcss": "4.0.14",
     "typescript": "5.3.3",
     "vitest": "^3.0.9"
