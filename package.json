@@ -40,7 +40,7 @@
     "@types/react-dom": "^19.0.4",
     "sugar-high": "^0.6.0",
     "tailwindcss": "4.0.14",
-    "typescript": "5.3.3",
+    "typescript": "5.9.3",
     "vitest": "^3.0.9"
   }
 }
