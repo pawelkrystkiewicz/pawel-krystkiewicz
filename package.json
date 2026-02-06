@@ -22,7 +22,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "iconoir-react": "^7.10.1",
-    "next": "15.4.8",
+    "next": "15.5.10",
     "next-mdx-remote": "^4.4.1",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
